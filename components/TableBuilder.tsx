@@ -57,6 +57,15 @@ export default function TableBuilder() {
     setShowNewTableDialog(false);
   }
 
+  function deleteTable() {
+    setCells([]);
+    setColWidths([]);
+    setRowHeights([]);
+    setColNames([]);
+    setRowNames([]);
+    setInitialized(false);
+  }
+
   function updateCell(r: number, c: number, value: string) {
     setCells((prev) => {
       const next = prev.map((row) => [...row]);
@@ -236,7 +245,7 @@ export default function TableBuilder() {
               خروجی CSV
             </button>
             <button
-              onClick={() => setShowNewTableDialog(true)}
+              onClick={deleteTable}
               className="rounded-lg border border-red-800 px-3 py-1.5 text-sm font-medium text-red-400 hover:bg-red-950"
             >
               حذف و شروع جدول جدید
@@ -276,31 +285,6 @@ export default function TableBuilder() {
             className="rounded-lg bg-slate-800 px-3 py-2 text-sm font-medium text-slate-200 hover:bg-slate-700"
           >
             + افزودن ستون
-          </button>
-        </div>
-        )}
-
-{initialized && (
-        <div className="flex flex-col gap-2">
-          <span className="text-xs font-medium text-slate-400">خروجی گرفتن</span>
-          <button
-            onClick={() => exportToWord(fileName, cells, colWidths, colNames, rowNames, rowHeights)}
-            className="rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-500"
-          >
-            خروجی Word
-          </button>
-          <button
-            onClick={() => exportToExcel(fileName, cells, colWidths, colNames, rowNames, rowHeights)}
-            className="rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-white hover:bg-emerald-500"
-          >
-            خروجی Excel
-          </button>
-          <button
-            onClick={() => exportToCSV(fileName, cells, colNames, rowNames)}
-            className="rounded-lg bg-amber-600 px-3 py-2 text-sm font-medium text-white hover:bg-amber-500"
-            title="فایل CSV برای ایمپورت در Access و Google Sheets"
-          >
-            خروجی CSV
           </button>
         </div>
         )}
@@ -436,8 +420,10 @@ export default function TableBuilder() {
         )}
         {!initialized && (
         <div className="flex h-full items-center justify-center">
-  <div className="text-center">
-    <p className="mb-4 text-sm text-slate-500">هنوز جدولی نساختی</p>
+  <div className="flex flex-col items-center gap-4 rounded-2xl border border-slate-800 bg-slate-900 px-10 py-8 text-center shadow-lg">
+    <p className="text-sm leading-6 text-slate-400">
+      هنوز جدولی نساختی. برای شروع، اندازه‌ی جدول رو مشخص کن و یه جدول جدید بساز.
+    </p>
     <button
       onClick={() => setShowNewTableDialog(true)}
       className="rounded-lg bg-indigo-600 px-5 py-2.5 font-medium text-white hover:bg-indigo-500"
