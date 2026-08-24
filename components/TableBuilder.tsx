@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { exportToWord, exportToExcel, exportToCSV } from '@/lib/export';
+import { exportToWord, exportToExcel, exportToSQL } from '@/lib/export';
 import EditableText from './EditableText';
 import NewTableDialog from './NewTableDialog';
 
@@ -216,46 +216,52 @@ export default function TableBuilder() {
   }
 
   return (
-<div className="flex h-screen flex-col overflow-hidden bg-slate-950">
+    <div className="flex h-screen flex-col gap-4 overflow-hidden bg-slate-950 p-4">
       {/* هدر بالای صفحه */}
-      <header className="flex shrink-0 items-center justify-between border-b border-slate-800 bg-slate-900 px-5 py-3">
-        <div>
-          <h1 className="text-lg font-bold text-slate-100">سازنده جدول</h1>
-          <p className="mt-0.5 text-xs text-slate-500">مدیریت و اکسپورت جدول</p>
+      <header className="flex shrink-0 items-center justify-between rounded-2xl border border-slate-800 bg-slate-900 px-5 py-3 shadow-lg shadow-black/30">
+        <div className="flex items-center gap-3">
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-600 text-sm font-bold text-white">
+            جد
+          </span>
+          <div>
+            <h1 className="text-lg font-bold text-slate-100">سازنده جدول</h1>
+            <p className="mt-0.5 text-xs text-slate-500">مدیریت و اکسپورت جدول</p>
+          </div>
         </div>
         {initialized && (
           <div className="flex items-center gap-2">
             <button
               onClick={() => exportToWord(fileName, cells, colWidths, colNames, rowNames, rowHeights)}
-              className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-500"
+              className="rounded-full bg-blue-600 px-4 py-2 text-xs font-medium text-white hover:bg-blue-500"
             >
               خروجی Word
             </button>
             <button
               onClick={() => exportToExcel(fileName, cells, colWidths, colNames, rowNames, rowHeights)}
-              className="rounded-lg bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-500"
+              className="rounded-full bg-emerald-600 px-4 py-2 text-xs font-medium text-white hover:bg-emerald-500"
             >
               خروجی Excel
             </button>
             <button
-              onClick={() => exportToCSV(fileName, cells, colNames, rowNames)}
-              className="rounded-lg bg-amber-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-amber-500"
-              title="فایل CSV برای ایمپورت در Access و Google Sheets"
+              onClick={() => exportToSQL(fileName, cells, colNames, rowNames)}
+              className="rounded-full bg-purple-600 px-4 py-2 text-xs font-medium text-white hover:bg-purple-500"
+              title="فایل SQL شامل CREATE TABLE و INSERT"
             >
-              خروجی CSV
+              خروجی SQL
             </button>
             <button
               onClick={deleteTable}
-              className="rounded-lg border border-red-800 px-3 py-1.5 text-sm font-medium text-red-400 hover:bg-red-950"
+              className="rounded-full border border-red-800 px-4 py-2 text-xs font-medium text-red-400 hover:bg-red-950"
             >
-              حذف و شروع جدول جدید
+              حذف جدول فعلی
             </button>
           </div>
         )}
       </header>
-      <div className="flex flex-1 overflow-hidden">
+
+      <div className="flex flex-1 gap-4 overflow-hidden">
       {/* سایدبار */}
-      <aside className="flex h-full w-72 shrink-0 flex-col gap-5 overflow-hidden border-l border-slate-800 bg-slate-900 p-5">
+      <aside className="flex h-full w-72 shrink-0 flex-col gap-5 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-lg shadow-black/30">
 
 {initialized && (
         <div>
@@ -276,24 +282,26 @@ export default function TableBuilder() {
           <span className="text-xs font-medium text-slate-400">ویرایش جدول</span>
           <button
             onClick={addRow}
-            className="rounded-lg bg-slate-800 px-3 py-2 text-sm font-medium text-slate-200 hover:bg-slate-700"
+            className="flex items-center gap-2 rounded-xl bg-slate-800 px-3 py-2.5 text-sm font-medium text-slate-200 hover:bg-slate-700"
           >
-            + افزودن ردیف
+            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-600/20 text-indigo-400">+</span>
+            افزودن ردیف
           </button>
           <button
             onClick={addColumn}
-            className="rounded-lg bg-slate-800 px-3 py-2 text-sm font-medium text-slate-200 hover:bg-slate-700"
+            className="flex items-center gap-2 rounded-xl bg-slate-800 px-3 py-2.5 text-sm font-medium text-slate-200 hover:bg-slate-700"
           >
-            + افزودن ستون
+            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-600/20 text-indigo-400">+</span>
+            افزودن ستون
           </button>
         </div>
         )}
 
         <div className="mt-auto flex flex-col gap-3">
-          <div className="rounded-lg border border-slate-800 bg-slate-800/50 p-3 text-[11px] leading-5 text-slate-400">
+          <div className="rounded-xl border border-slate-800 bg-slate-800/50 p-3 text-[11px] leading-5 text-slate-400">
             لبه‌ی راست هر ستون یا پایین هر ردیف رو بگیر و بکش تا اندازه‌ش عوض بشه.
             آیکون ⠿ رو بگیر و بکش تا جابجا بشه. روی نام ردیف/ستون کلیک کن تا ویرایشش
-            کنی. فایل CSV مستقیم توی Access و Google Sheets ایمپورت می‌شه.
+            کنی.
           </div>
         </div>
       </aside>
@@ -401,7 +409,7 @@ export default function TableBuilder() {
                       className="border border-slate-700 p-0"
                       style={{ height: rowHeights[ri] }}
                     >
-                  <div className="flex h-full items-center justify-center px-2"> 
+                    <div className="flex h-full items-center justify-center px-2">
                       <EditableText
                         value={value}
                         onChange={(v) => updateCell(ri, ci, v)}
@@ -420,22 +428,22 @@ export default function TableBuilder() {
         )}
         {!initialized && (
         <div className="flex h-full items-center justify-center">
-  <div className="flex flex-col items-center gap-4 rounded-2xl border border-slate-800 bg-slate-900 px-10 py-8 text-center shadow-lg">
-    <p className="text-sm leading-6 text-slate-400">
-      هنوز جدولی نساختی. برای شروع، اندازه‌ی جدول رو مشخص کن و یه جدول جدید بساز.
-    </p>
-    <button
-      onClick={() => setShowNewTableDialog(true)}
-      className="rounded-lg bg-indigo-600 px-5 py-2.5 font-medium text-white hover:bg-indigo-500"
-    >
-      + ساخت جدول
-    </button>
-  </div>
-</div>
-)}
-        
+          <div className="flex flex-col items-center gap-4 rounded-2xl border border-slate-800 bg-slate-900 px-10 py-8 text-center shadow-lg">
+            <p className="text-sm leading-6 text-slate-400">
+              هنوز جدولی نساختی. برای شروع، اندازه‌ی جدول رو مشخص کن و یه جدول جدید بساز.
+            </p>
+            <button
+              onClick={() => setShowNewTableDialog(true)}
+              className="rounded-lg bg-indigo-600 px-5 py-2.5 font-medium text-white hover:bg-indigo-500"
+            >
+              + ساخت جدول
+            </button>
+          </div>
+        </div>
+        )}
       </main>
       </div>
+
         {showNewTableDialog && (
           <NewTableDialog
             rowsInput={rowsInput}

@@ -119,28 +119,42 @@ export function exportToExcel(
   saveAs(blob, `${fileName}.xlsx`);
 }
 
-// خروجی CSV با کدگذاری UTF-8 BOM تا فارسی در Excel/Access/Google Sheets درست نمایش داده شود
-export function exportToCSV(
+// خروجی SQL: یک اسکریپت CREATE TABLE + INSERT برای وارد کردن به هر دیتابیس (MySQL/Postgres/SQLite)
+function sanitizeSqlIdentifier(name: string, fallback: string): string {
+  const trimmed = (name || '').trim();
+  return trimmed ? trimmed.replace(/"/g, '""') : fallback;
+}
+
+function sanitizeSqlValue(value: string): string {
+  return `'${(value ?? '').replace(/'/g, "''")}'`;
+}
+
+export function exportToSQL(
   fileName: string,
   cellsInput: string[][],
   colNames: string[] = [],
   rowNames: string[] = []
 ) {
-  const cells = buildFullGrid(cellsInput, colNames, rowNames);
-  const escapeCell = (value: string) => {
-    const v = value ?? '';
-    if (v.includes(',') || v.includes('"') || v.includes('\n')) {
-      return `"${v.replace(/"/g, '""')}"`;
-    }
-    return v;
-  };
+  const tableName = sanitizeSqlIdentifier(fileName, 'my_table');
+  const columns = [
+    'ردیف',
+    ...colNames.map((c, i) => sanitizeSqlIdentifier(c, `ستون_${i + 1}`)),
+  ];
+  const quotedColumns = columns.map((c) => `"${c}"`).join(', ');
 
-  const csvContent = cells
-    .map((row) => row.map(escapeCell).join(','))
-    .join('\r\n');
+  const createStatement = `CREATE TABLE "${tableName}" (\n${columns
+    .map((c) => `  "${c}" TEXT`)
+    .join(',\n')}\n);`;
 
-  const blob = new Blob(['\uFEFF' + csvContent], {
-    type: 'text/csv;charset=utf-8;',
+  const insertStatements = cellsInput.map((row, ri) => {
+    const values = [rowNames[ri] || '', ...row].map(sanitizeSqlValue).join(', ');
+    return `INSERT INTO "${tableName}" (${quotedColumns}) VALUES (${values});`;
   });
-  saveAs(blob, `${fileName}.csv`);
+
+  const sqlContent = [createStatement, '', ...insertStatements].join('\n');
+
+  const blob = new Blob(['\uFEFF' + sqlContent], {
+    type: 'application/sql;charset=utf-8;',
+  });
+  saveAs(blob, `${fileName}.sql`);
 }
