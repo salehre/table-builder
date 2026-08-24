@@ -2,6 +2,8 @@
 
 import { useRef, useState } from 'react';
 import { exportToWord, exportToExcel, exportToCSV } from '@/lib/export';
+import EditableText from './EditableText';
+import NewTableDialog from './NewTableDialog';
 
 const DEFAULT_COL_WIDTH = 130;
 const DEFAULT_ROW_HEIGHT = 40;
@@ -20,6 +22,7 @@ export default function TableBuilder() {
   const [rowsInput, setRowsInput] = useState(4);
   const [colsInput, setColsInput] = useState(4);
   const [fileName, setFileName] = useState('جدول-من');
+  const [showNewTableDialog, setShowNewTableDialog] = useState(false);
 
   const [cells, setCells] = useState<string[][]>([]);
   const [colWidths, setColWidths] = useState<number[]>([]);
@@ -51,6 +54,7 @@ export default function TableBuilder() {
     setColNames(Array.from({ length: c }, (_, i) => `ستون ${i + 1}`));
     setRowNames(Array.from({ length: r }, (_, i) => `ردیف ${i + 1}`));
     setInitialized(true);
+    setShowNewTableDialog(false);
   }
 
   function updateCell(r: number, c: number, value: string) {
@@ -202,71 +206,10 @@ export default function TableBuilder() {
     setDragOverRow(null);
   }
 
-  if (!initialized) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-950 p-4">
-        <div className="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900 p-8 shadow-xl">
-          <h1 className="mb-1 text-2xl font-bold text-slate-100">سازنده جدول</h1>
-          <p className="mb-6 text-sm text-slate-400">
-            تعداد ردیف و ستون دلخواه رو وارد کن و جدول رو بساز
-          </p>
-
-          <div className="mb-4 grid grid-cols-2 gap-4">
-            <div>
-              <label className="mb-1 block text-sm font-medium text-slate-300">
-                تعداد ردیف
-              </label>
-              <input
-                type="number"
-                min={1}
-                max={200}
-                value={rowsInput}
-                onChange={(e) => setRowsInput(Number(e.target.value))}
-                className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-slate-100 focus:border-indigo-500 focus:outline-none"
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium text-slate-300">
-                تعداد ستون
-              </label>
-              <input
-                type="number"
-                min={1}
-                max={50}
-                value={colsInput}
-                onChange={(e) => setColsInput(Number(e.target.value))}
-                className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-slate-100 focus:border-indigo-500 focus:outline-none"
-              />
-            </div>
-          </div>
-
-          <div className="mb-6">
-            <label className="mb-1 block text-sm font-medium text-slate-300">
-              نام فایل خروجی
-            </label>
-            <input
-              type="text"
-              value={fileName}
-              onChange={(e) => setFileName(e.target.value)}
-              className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-slate-100 focus:border-indigo-500 focus:outline-none"
-            />
-          </div>
-
-          <button
-            onClick={createTable}
-            className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 font-medium text-white transition hover:bg-indigo-500"
-          >
-            ساخت جدول
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="flex min-h-screen overflow-hidden bg-slate-950">
+    <div className="flex h-screen overflow-hidden bg-slate-950">
       {/* سایدبار */}
-      <aside className="flex w-72 shrink-0 flex-col gap-5 border-l border-slate-800 bg-slate-900 p-5">
+      <aside className="flex h-screen w-72 shrink-0 flex-col gap-5 overflow-hidden border-l border-slate-800 bg-slate-900 p-5">
         <div>
           <h1 className="text-lg font-bold text-slate-100">سازنده جدول</h1>
           <p className="mt-0.5 text-xs text-slate-500">مدیریت و اکسپورت جدول</p>
@@ -284,6 +227,7 @@ export default function TableBuilder() {
           />
         </div>
 
+{initialized && (
         <div className="flex flex-col gap-2">
           <span className="text-xs font-medium text-slate-400">ویرایش جدول</span>
           <button
@@ -299,7 +243,9 @@ export default function TableBuilder() {
             + افزودن ستون
           </button>
         </div>
+        )}
 
+{initialized && (
         <div className="flex flex-col gap-2">
           <span className="text-xs font-medium text-slate-400">خروجی گرفتن</span>
           <button
@@ -322,6 +268,7 @@ export default function TableBuilder() {
             خروجی CSV
           </button>
         </div>
+        )}
 
         <div className="mt-auto flex flex-col gap-3">
           <div className="rounded-lg border border-slate-800 bg-slate-800/50 p-3 text-[11px] leading-5 text-slate-400">
@@ -330,7 +277,7 @@ export default function TableBuilder() {
             کنی. فایل CSV مستقیم توی Access و Google Sheets ایمپورت می‌شه.
           </div>
           <button
-            onClick={() => setInitialized(false)}
+            onClick={() => setShowNewTableDialog(true)}
             className="rounded-lg border border-slate-700 px-3 py-2 text-sm text-slate-400 hover:bg-slate-800 hover:text-slate-200"
           >
             جدول جدید
@@ -372,12 +319,13 @@ export default function TableBuilder() {
                       >
                         ⠿
                       </span>
-                      <input
-                        value={colNames[ci] ?? ''}
-                        onChange={(e) => updateColName(ci, e.target.value)}
-                        style={{ direction: 'rtl' }}
-                        className="w-full min-w-0 flex-1 bg-transparent text-center text-xs font-medium text-slate-200 outline-none focus:text-white"
-                      />
+                        <EditableText
+                          value={colNames[ci] ?? ''}
+                          onChange={(v) => updateColName(ci, v)}
+                          align="center"
+                          className="flex-1 text-xs font-medium text-slate-200"
+                          inputClassName="flex-1 text-center text-xs font-medium text-white"
+                        />
                       <button
                         onClick={() => removeColumn(ci)}
                         className="text-slate-600 hover:text-red-400"
@@ -414,11 +362,11 @@ export default function TableBuilder() {
                       >
                         ⠿
                       </span>
-                      <input
+                      <EditableText
                         value={rowNames[ri] ?? ''}
-                        onChange={(e) => updateRowName(ri, e.target.value)}
-                        style={{ direction: 'rtl' }}
-                        className="w-full min-w-0 flex-1 bg-transparent text-xs font-medium text-slate-200 outline-none focus:text-white"
+                        onChange={(v) => updateRowName(ri, v)}
+                        className="flex-1 text-xs font-medium text-slate-200"
+                        inputClassName="flex-1 text-xs font-medium text-white"
                       />
                       <button
                         onClick={() => removeRow(ri)}
@@ -439,12 +387,14 @@ export default function TableBuilder() {
                       className="border border-slate-700 p-0"
                       style={{ height: rowHeights[ri] }}
                     >
-                      <input
+                    <div className="flex h-full items-center px-2">
+                      <EditableText
                         value={value}
-                        onChange={(e) => updateCell(ri, ci, e.target.value)}
-                        className="h-full w-full bg-transparent px-2 text-sm text-slate-100 outline-none focus:bg-slate-800"
-                        style={{ direction: 'rtl' }}
+                        onChange={(v) => updateCell(ri, ci, v)}
+                        className="text-sm text-slate-100"
+                        inputClassName="text-sm text-slate-100"
                       />
+                    </div>
                     </td>
                   ))}
                 </tr>
@@ -453,6 +403,19 @@ export default function TableBuilder() {
           </table>
         </div>
       </main>
+        {showNewTableDialog && (
+          <NewTableDialog
+            rowsInput={rowsInput}
+            colsInput={colsInput}
+            fileName={fileName}
+            setRowsInput={setRowsInput}
+            setColsInput={setColsInput}
+            setFileName={setFileName}
+            onCreate={createTable}
+            onClose={() => setShowNewTableDialog(false)}
+            canCancel={initialized}
+          />
+        )}
     </div>
   );
 }
