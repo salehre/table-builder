@@ -207,13 +207,46 @@ export default function TableBuilder() {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-950">
-      {/* سایدبار */}
-      <aside className="flex h-screen w-72 shrink-0 flex-col gap-5 overflow-hidden border-l border-slate-800 bg-slate-900 p-5">
+<div className="flex h-screen flex-col overflow-hidden bg-slate-950">
+      {/* هدر بالای صفحه */}
+      <header className="flex shrink-0 items-center justify-between border-b border-slate-800 bg-slate-900 px-5 py-3">
         <div>
           <h1 className="text-lg font-bold text-slate-100">سازنده جدول</h1>
           <p className="mt-0.5 text-xs text-slate-500">مدیریت و اکسپورت جدول</p>
         </div>
+        {initialized && (
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => exportToWord(fileName, cells, colWidths, colNames, rowNames, rowHeights)}
+              className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-500"
+            >
+              خروجی Word
+            </button>
+            <button
+              onClick={() => exportToExcel(fileName, cells, colWidths, colNames, rowNames, rowHeights)}
+              className="rounded-lg bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-500"
+            >
+              خروجی Excel
+            </button>
+            <button
+              onClick={() => exportToCSV(fileName, cells, colNames, rowNames)}
+              className="rounded-lg bg-amber-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-amber-500"
+              title="فایل CSV برای ایمپورت در Access و Google Sheets"
+            >
+              خروجی CSV
+            </button>
+            <button
+              onClick={() => setShowNewTableDialog(true)}
+              className="rounded-lg border border-red-800 px-3 py-1.5 text-sm font-medium text-red-400 hover:bg-red-950"
+            >
+              حذف و شروع جدول جدید
+            </button>
+          </div>
+        )}
+      </header>
+      <div className="flex flex-1 overflow-hidden">
+      {/* سایدبار */}
+      <aside className="flex h-full w-72 shrink-0 flex-col gap-5 overflow-hidden border-l border-slate-800 bg-slate-900 p-5">
 
 {initialized && (
         <div>
@@ -278,17 +311,12 @@ export default function TableBuilder() {
             آیکون ⠿ رو بگیر و بکش تا جابجا بشه. روی نام ردیف/ستون کلیک کن تا ویرایشش
             کنی. فایل CSV مستقیم توی Access و Google Sheets ایمپورت می‌شه.
           </div>
-          <button
-            onClick={() => setShowNewTableDialog(true)}
-            className="rounded-lg border border-slate-700 px-3 py-2 text-sm text-slate-400 hover:bg-slate-800 hover:text-slate-200"
-          >
-            جدول جدید
-          </button>
         </div>
       </aside>
 
       {/* محتوای اصلی */}
       <main className="flex-1 overflow-auto p-6">
+        {initialized && (
         <div
           className="overflow-auto rounded-xl border border-slate-800 bg-slate-900 p-4"
           dir="ltr"
@@ -389,12 +417,13 @@ export default function TableBuilder() {
                       className="border border-slate-700 p-0"
                       style={{ height: rowHeights[ri] }}
                     >
-                    <div className="flex h-full items-center px-2">
+                  <div className="flex h-full items-center justify-center px-2"> 
                       <EditableText
                         value={value}
                         onChange={(v) => updateCell(ri, ci, v)}
+                        align="center"
                         className="text-sm text-slate-100"
-                        inputClassName="text-sm text-slate-100"
+                        inputClassName="text-sm text-slate-100 text-center"
                       />
                     </div>
                     </td>
@@ -404,6 +433,8 @@ export default function TableBuilder() {
             </tbody>
           </table>
         </div>
+        )}
+        {!initialized && (
         <div className="flex h-full items-center justify-center">
   <div className="text-center">
     <p className="mb-4 text-sm text-slate-500">هنوز جدولی نساختی</p>
@@ -415,7 +446,10 @@ export default function TableBuilder() {
     </button>
   </div>
 </div>
+)}
+        
       </main>
+      </div>
         {showNewTableDialog && (
           <NewTableDialog
             rowsInput={rowsInput}
