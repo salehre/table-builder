@@ -4,6 +4,7 @@ import { useRef, useState } from 'react';
 import { exportToWord, exportToExcel, exportToSQL } from '@/lib/export';
 import EditableText from './EditableText';
 import NewTableDialog from './NewTableDialog';
+import ConfirmDialog from './ConfirmDialog';
 
 const DEFAULT_COL_WIDTH = 130;
 const DEFAULT_ROW_HEIGHT = 40;
@@ -23,6 +24,9 @@ export default function TableBuilder() {
   const [colsInput, setColsInput] = useState(4);
   const [fileName, setFileName] = useState('جدول-من');
   const [showNewTableDialog, setShowNewTableDialog] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<
+    'word' | 'excel' | 'sql' | 'delete' | null
+  >(null);
 
   const [cells, setCells] = useState<string[][]>([]);
   const [colWidths, setColWidths] = useState<number[]>([]);
@@ -64,6 +68,47 @@ export default function TableBuilder() {
     setColNames([]);
     setRowNames([]);
     setInitialized(false);
+  }
+
+  const confirmDialogContent = {
+    word: {
+      title: 'خروجی Word',
+      description: 'جدول فعلی به‌صورت فایل Word دانلود می‌شه. مطمئنی می‌خوای ادامه بدی؟',
+      confirmLabel: 'بله، دانلود کن',
+      danger: false,
+      action: () =>
+        exportToWord(fileName, cells, colWidths, colNames, rowNames, rowHeights),
+    },
+    excel: {
+      title: 'خروجی Excel',
+      description: 'جدول فعلی به‌صورت فایل Excel دانلود می‌شه. مطمئنی می‌خوای ادامه بدی؟',
+      confirmLabel: 'بله، دانلود کن',
+      danger: false,
+      action: () =>
+        exportToExcel(fileName, cells, colWidths, colNames, rowNames, rowHeights),
+    },
+    sql: {
+      title: 'خروجی SQL',
+      description:
+        'یه اسکریپت SQL شامل CREATE TABLE و INSERT از روی جدول فعلی ساخته و دانلود می‌شه. مطمئنی می‌خوای ادامه بدی؟',
+      confirmLabel: 'بله، دانلود کن',
+      danger: false,
+      action: () => exportToSQL(fileName, cells, colNames, rowNames),
+    },
+    delete: {
+      title: 'حذف جدول',
+      description:
+        'با این کار جدول فعلی و تمام داده‌هاش برای همیشه پاک می‌شه و به صفحه‌ی شروع برمی‌گردی. این عمل قابل بازگشت نیست.',
+      confirmLabel: 'بله، حذف کن',
+      danger: true,
+      action: deleteTable,
+    },
+  } as const;
+
+  function runConfirmedAction() {
+    if (!confirmAction) return;
+    confirmDialogContent[confirmAction].action();
+    setConfirmAction(null);
   }
 
   function updateCell(r: number, c: number, value: string) {
@@ -231,29 +276,29 @@ export default function TableBuilder() {
         {initialized && (
           <div className="flex items-center gap-2">
             <button
-              onClick={() => exportToWord(fileName, cells, colWidths, colNames, rowNames, rowHeights)}
+              onClick={() => setConfirmAction('word')}
               className="rounded-full bg-blue-600 px-4 py-2 text-xs font-medium text-white hover:bg-blue-500"
             >
               خروجی Word
             </button>
             <button
-              onClick={() => exportToExcel(fileName, cells, colWidths, colNames, rowNames, rowHeights)}
+              onClick={() => setConfirmAction('excel')}
               className="rounded-full bg-emerald-600 px-4 py-2 text-xs font-medium text-white hover:bg-emerald-500"
             >
               خروجی Excel
             </button>
             <button
-              onClick={() => exportToSQL(fileName, cells, colNames, rowNames)}
+              onClick={() => setConfirmAction('sql')}
               className="rounded-full bg-purple-600 px-4 py-2 text-xs font-medium text-white hover:bg-purple-500"
               title="فایل SQL شامل CREATE TABLE و INSERT"
             >
               خروجی SQL
             </button>
             <button
-              onClick={deleteTable}
+              onClick={() => setConfirmAction('delete')}
               className="rounded-full border border-red-800 px-4 py-2 text-xs font-medium text-red-400 hover:bg-red-950"
             >
-              حذف جدول فعلی
+              حذف و شروع جدول جدید
             </button>
           </div>
         )}
@@ -455,6 +500,17 @@ export default function TableBuilder() {
             onCreate={createTable}
             onClose={() => setShowNewTableDialog(false)}
             canCancel={initialized}
+          />
+        )}
+
+        {confirmAction && (
+          <ConfirmDialog
+            title={confirmDialogContent[confirmAction].title}
+            description={confirmDialogContent[confirmAction].description}
+            confirmLabel={confirmDialogContent[confirmAction].confirmLabel}
+            danger={confirmDialogContent[confirmAction].danger}
+            onConfirm={runConfirmedAction}
+            onClose={() => setConfirmAction(null)}
           />
         )}
     </div>
