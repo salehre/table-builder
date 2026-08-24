@@ -215,6 +215,7 @@ export default function TableBuilder() {
           <p className="mt-0.5 text-xs text-slate-500">مدیریت و اکسپورت جدول</p>
         </div>
 
+{initialized && (
         <div>
           <label className="mb-1 block text-xs font-medium text-slate-400">
             نام فایل خروجی
@@ -226,6 +227,7 @@ export default function TableBuilder() {
             className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:border-indigo-500 focus:outline-none"
           />
         </div>
+              )}
 
 {initialized && (
         <div className="flex flex-col gap-2">
@@ -249,13 +251,13 @@ export default function TableBuilder() {
         <div className="flex flex-col gap-2">
           <span className="text-xs font-medium text-slate-400">خروجی گرفتن</span>
           <button
-            onClick={() => exportToWord(fileName, cells, colWidths, colNames, rowNames)}
+            onClick={() => exportToWord(fileName, cells, colWidths, colNames, rowNames, rowHeights)}
             className="rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-500"
           >
             خروجی Word
           </button>
           <button
-            onClick={() => exportToExcel(fileName, cells, colWidths, colNames, rowNames)}
+            onClick={() => exportToExcel(fileName, cells, colWidths, colNames, rowNames, rowHeights)}
             className="rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-white hover:bg-emerald-500"
           >
             خروجی Excel
@@ -402,6 +404,17 @@ export default function TableBuilder() {
             </tbody>
           </table>
         </div>
+        <div className="flex h-full items-center justify-center">
+  <div className="text-center">
+    <p className="mb-4 text-sm text-slate-500">هنوز جدولی نساختی</p>
+    <button
+      onClick={() => setShowNewTableDialog(true)}
+      className="rounded-lg bg-indigo-600 px-5 py-2.5 font-medium text-white hover:bg-indigo-500"
+    >
+      + ساخت جدول
+    </button>
+  </div>
+</div>
       </main>
         {showNewTableDialog && (
           <NewTableDialog

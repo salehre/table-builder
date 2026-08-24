@@ -9,14 +9,15 @@ import {
   Paragraph,
   WidthType,
   BorderStyle,
+  HeightRule,
 } from 'docx';
 
-// تبدیل عرض پیکسل به واحد dxa (مورد استفاده در Word) - تقریبی
 const pxToDxa = (px: number) => Math.round(px * 15);
+const DEFAULT_ROW_HEIGHT_FALLBACK = 40;
 
-const NAME_COL_WIDTH = 110;
+const NAME_COL_WIDTH = 130;
+const HEADER_ROW_HEIGHT = 36;
 
-// اضافه کردن نام ستون‌ها به عنوان سطر اول و نام ردیف‌ها به عنوان ستون اول
 function buildFullGrid(
   cells: string[][],
   colNames: string[],
@@ -32,10 +33,13 @@ export function exportToWord(
   cellsInput: string[][],
   colWidthsInput: number[],
   colNames: string[] = [],
-  rowNames: string[] = []
+  rowNames: string[] = [],
+  rowHeightsInput: number[] = []
 ) {
   const cells = buildFullGrid(cellsInput, colNames, rowNames);
   const colWidths = [NAME_COL_WIDTH, ...colWidthsInput];
+  const rowHeights = [HEADER_ROW_HEIGHT, ...rowHeightsInput];
+
   const borders = {
     top: { style: BorderStyle.SINGLE, size: 2, color: 'CCCCCC' },
     bottom: { style: BorderStyle.SINGLE, size: 2, color: 'CCCCCC' },
@@ -43,9 +47,13 @@ export function exportToWord(
     right: { style: BorderStyle.SINGLE, size: 2, color: 'CCCCCC' },
   };
 
-  const rows = cells.map((row, rowIndex) => {
-    return new TableRow({
-      children: row.map((cellText, colIndex) => {
+const rows = cells.map((row, rowIndex) => {
+  return new TableRow({
+    height: {
+      value: pxToDxa(rowHeights[rowIndex] || DEFAULT_ROW_HEIGHT_FALLBACK),
+      rule: 'atLeast',
+    },
+    children: row.map((cellText, colIndex) => {
         return new TableCell({
           width: {
             size: pxToDxa(colWidths[colIndex] || 100),
@@ -90,14 +98,16 @@ export function exportToExcel(
   cellsInput: string[][],
   colWidthsInput: number[],
   colNames: string[] = [],
-  rowNames: string[] = []
+  rowNames: string[] = [],
+  rowHeightsInput: number[] = []
 ) {
   const cells = buildFullGrid(cellsInput, colNames, rowNames);
   const colWidths = [NAME_COL_WIDTH, ...colWidthsInput];
+  const rowHeights = [HEADER_ROW_HEIGHT, ...rowHeightsInput];
   const worksheet = XLSX.utils.aoa_to_sheet(cells);
 
-  // تنظیم عرض ستون‌ها (تبدیل تقریبی پیکسل به واحد کاراکتر اکسل)
   worksheet['!cols'] = colWidths.map((w) => ({ wch: Math.max(6, Math.round(w / 7)) }));
+  worksheet['!rows'] = rowHeights.map((h) => ({ hpx: h }));
 
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');

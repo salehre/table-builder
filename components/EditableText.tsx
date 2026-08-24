@@ -38,35 +38,41 @@ export default function EditableText({
     setEditing(false);
   }
 
-  if (editing) {
-    return (
-      <input
-        ref={inputRef}
-        value={draft}
-        onChange={(e) => setDraft(e.target.value)}
-        onBlur={commit}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') commit();
-          if (e.key === 'Escape') cancel();
-        }}
-        style={{ direction: 'rtl' }}
-        className={`w-full min-w-0 rounded border border-indigo-500 bg-slate-950 px-1.5 py-0.5 shadow-[0_0_0_2px_rgba(99,102,241,0.25)] outline-none ${inputClassName}`}
-      />
-    );
+  function startEdit() {
+    setDraft(value);
+    setEditing(true);
   }
 
   return (
-    <span
-      onDoubleClick={() => {
-        setDraft(value);
-        setEditing(true);
-      }}
-      className={`block w-full min-w-0 cursor-default select-none truncate ${
-        align === 'center' ? 'text-center' : ''
-      } ${className}`}
-      title="برای ویرایش دابل‌کلیک کن"
+    <div
+      onDoubleClick={startEdit}
+      className={`flex h-full w-full flex-1 min-w-0 items-center ${
+        align === 'center' ? 'justify-center' : ''
+      } cursor-default select-none`}
     >
-      {value || '\u00A0'}
-    </span>
+      {editing ? (
+        <input
+          ref={inputRef}
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onBlur={commit}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') commit();
+            if (e.key === 'Escape') cancel();
+          }}
+          style={{ direction: 'rtl' }}
+          className={`w-full min-w-0 rounded border border-indigo-500 bg-slate-950 px-1.5 py-0.5 shadow-[0_0_0_2px_rgba(99,102,241,0.25)] outline-none ${inputClassName}`}
+        />
+      ) : (
+        <span
+          title="برای ویرایش دابل‌کلیک کن"
+          className={`block w-full min-w-0 truncate ${
+            align === 'center' ? 'text-center' : ''
+          } ${className}`}
+        >
+          {value || '\u00A0'}
+        </span>
+      )}
+    </div>
   );
 }
