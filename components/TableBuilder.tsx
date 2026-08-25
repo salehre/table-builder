@@ -263,9 +263,9 @@ export default function TableBuilder() {
   return (
     <div className="flex h-screen flex-col gap-4 overflow-hidden bg-slate-950 p-4">
       {/* هدر بالای صفحه */}
-      <header className="flex shrink-0 items-center justify-between rounded-2xl border border-slate-800 bg-slate-900 px-5 py-3 shadow-lg shadow-black/30">
+      <header className="flex shrink-0 items-center justify-between rounded-lg border border-slate-800 bg-slate-900 px-5 py-3 shadow-lg shadow-black/30">
         <div className="flex items-center gap-3">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-600 text-sm font-bold text-white">
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-600 text-sm font-bold text-white">
             جد
           </span>
           <div>
@@ -277,26 +277,26 @@ export default function TableBuilder() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setConfirmAction('word')}
-              className="rounded-full bg-blue-600 px-4 py-2 text-xs font-medium text-white hover:bg-blue-500"
+              className="rounded-lg bg-[#2461CA] px-4 py-2 text-xs font-medium text-white hover:bg-[#1148a7]"
             >
               خروجی Word
             </button>
             <button
               onClick={() => setConfirmAction('excel')}
-              className="rounded-full bg-emerald-600 px-4 py-2 text-xs font-medium text-white hover:bg-emerald-500"
+              className="rounded-lg bg-[#0F7937] px-4 py-2 text-xs font-medium text-white hover:bg-[#045c26]"
             >
               خروجی Excel
             </button>
             <button
               onClick={() => setConfirmAction('sql')}
-              className="rounded-full bg-purple-600 px-4 py-2 text-xs font-medium text-white hover:bg-purple-500"
+              className="rounded-lg bg-[#d6771d] px-4 py-2 text-xs font-medium text-white hover:bg-purple-500"
               title="فایل SQL شامل CREATE TABLE و INSERT"
             >
               خروجی SQL
             </button>
             <button
               onClick={() => setConfirmAction('delete')}
-              className="rounded-full border border-red-800 px-4 py-2 text-xs font-medium text-red-400 hover:bg-red-950"
+              className="rounded-lg border border-red-800 px-4 py-2 text-xs font-medium text-red-400 hover:bg-red-950"
             >
               حذف و شروع جدول جدید
             </button>
@@ -306,7 +306,7 @@ export default function TableBuilder() {
 
       <div className="flex flex-1 gap-4 overflow-hidden">
       {/* سایدبار */}
-      <aside className="flex h-full w-72 shrink-0 flex-col gap-5 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-lg shadow-black/30">
+      <aside className="flex h-full w-72 shrink-0 flex-col gap-5 overflow-hidden rounded-lg border border-slate-800 bg-slate-900 p-5 shadow-lg shadow-black/30">
 
 {initialized && (
         <div>
@@ -327,14 +327,14 @@ export default function TableBuilder() {
           <span className="text-xs font-medium text-slate-400">ویرایش جدول</span>
           <button
             onClick={addRow}
-            className="flex items-center gap-2 rounded-xl bg-slate-800 px-3 py-2.5 text-sm font-medium text-slate-200 hover:bg-slate-700"
+            className="flex items-center gap-2 rounded-lg bg-slate-800 px-3 py-2.5 text-sm font-medium text-slate-200 hover:bg-slate-700"
           >
             <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-600/20 text-indigo-400">+</span>
             افزودن ردیف
           </button>
           <button
             onClick={addColumn}
-            className="flex items-center gap-2 rounded-xl bg-slate-800 px-3 py-2.5 text-sm font-medium text-slate-200 hover:bg-slate-700"
+            className="flex items-center gap-2 rounded-lg bg-slate-800 px-3 py-2.5 text-sm font-medium text-slate-200 hover:bg-slate-700"
           >
             <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-600/20 text-indigo-400">+</span>
             افزودن ستون
@@ -343,7 +343,7 @@ export default function TableBuilder() {
         )}
 
         <div className="mt-auto flex flex-col gap-3">
-          <div className="rounded-xl border border-slate-800 bg-slate-800/50 p-3 text-[11px] leading-5 text-slate-400">
+          <div className="rounded-lg border border-slate-800 bg-slate-800/50 p-3 text-[11px] leading-5 text-slate-400">
             لبه‌ی راست هر ستون یا پایین هر ردیف رو بگیر و بکش تا اندازه‌ش عوض بشه.
             آیکون ⠿ رو بگیر و بکش تا جابجا بشه. روی نام ردیف/ستون کلیک کن تا ویرایشش
             کنی.
@@ -355,7 +355,7 @@ export default function TableBuilder() {
       <main className="flex-1 overflow-auto p-6">
         {initialized && (
         <div
-          className="overflow-auto rounded-xl border border-slate-800 bg-slate-900 p-4"
+          className="overflow-auto rounded-lg border border-slate-800 bg-slate-900 p-4"
           dir="ltr"
         >
           <table className="border-separate" style={{ borderSpacing: 0 }}>
@@ -473,7 +473,7 @@ export default function TableBuilder() {
         )}
         {!initialized && (
         <div className="flex h-full items-center justify-center">
-          <div className="flex flex-col items-center gap-4 rounded-2xl border border-slate-800 bg-slate-900 px-10 py-8 text-center shadow-lg">
+          <div className="flex flex-col items-center gap-4 rounded-lg border border-slate-800 bg-slate-900 px-10 py-8 text-center shadow-lg">
             <p className="text-sm leading-6 text-slate-400">
               هنوز جدولی نساختی. برای شروع، اندازه‌ی جدول رو مشخص کن و یه جدول جدید بساز.
             </p>

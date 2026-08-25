@@ -14,11 +14,11 @@ body {
 
 ::-webkit-scrollbar {
   height: 10px;
-  width: 10px;
+  width: 9px;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 8px;
+  background: #1d3b5c;
+  border-radius: 5px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
