@@ -27,6 +27,7 @@ export default function TableBuilder() {
   const [confirmAction, setConfirmAction] = useState<
     'word' | 'excel' | 'sql' | 'delete' | null
   >(null);
+  const [direction, setDirection] = useState<'rtl' | 'ltr'>('rtl');
 
   const [cells, setCells] = useState<string[][]>([]);
   const [colWidths, setColWidths] = useState<number[]>([]);
@@ -261,7 +262,10 @@ export default function TableBuilder() {
   }
 
   return (
-    <div className="flex h-screen flex-col gap-4 overflow-hidden bg-slate-950 p-4">
+    <div
+      className="flex h-screen flex-col gap-4 overflow-hidden bg-slate-950 p-4"
+      dir={direction}
+    >
       {/* هدر بالای صفحه */}
       <header className="flex shrink-0 items-center justify-between rounded-lg border border-slate-800 bg-slate-900 px-5 py-3 shadow-lg shadow-black/30">
         <div className="flex items-center gap-3">
@@ -272,6 +276,13 @@ export default function TableBuilder() {
             <h1 className="text-lg font-bold text-slate-100">سازنده جدول</h1>
             <p className="mt-0.5 text-xs text-slate-500">مدیریت و اکسپورت جدول</p>
           </div>
+          <button
+            onClick={() => setDirection((d) => (d === 'rtl' ? 'ltr' : 'rtl'))}
+            className="mr-2 flex items-center gap-1.5 rounded-full border border-slate-700 px-3 py-1.5 text-xs font-medium text-slate-300 hover:bg-slate-800"
+            title="تغییر جهت صفحه و جدول"
+          >
+            ⇄ {direction === 'rtl' ? 'راست‌به‌چپ' : 'چپ‌به‌راست'}
+          </button>
         </div>
         {initialized && (
           <div className="flex items-center gap-2">
@@ -289,7 +300,7 @@ export default function TableBuilder() {
             </button>
             <button
               onClick={() => setConfirmAction('sql')}
-              className="rounded-lg bg-[#d6771d] px-4 py-2 text-xs font-medium text-white hover:bg-purple-500"
+              className="rounded-lg bg-[#d6771d] px-4 py-2 text-xs font-medium text-white hover:bg-[#b85f1a]"
               title="فایل SQL شامل CREATE TABLE و INSERT"
             >
               خروجی SQL
@@ -356,7 +367,7 @@ export default function TableBuilder() {
         {initialized && (
         <div
           className="overflow-auto rounded-lg border border-slate-800 bg-slate-900 p-4"
-          dir="ltr"
+          dir={direction}
         >
           <table className="border-separate" style={{ borderSpacing: 0 }}>
             <colgroup>
