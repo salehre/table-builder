@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 import { exportToWord, exportToExcel, exportToSQL } from '@/lib/export';
 import EditableText from './EditableText';
 import NewTableDialog from './NewTableDialog';
@@ -20,6 +22,18 @@ function reorder<T>(arr: T[], from: number, to: number): T[] {
 }
 
 export default function TableBuilder() {
+  const { t, i18n } = useTranslation();
+  const direction = i18n.language === 'fa' ? 'rtl' : 'ltr';
+
+  function toggleLanguage() {
+    i18n.changeLanguage(direction === 'rtl' ? 'en' : 'fa');
+  }
+
+  useEffect(() => {
+    document.documentElement.lang = i18n.language;
+    document.documentElement.dir = direction;
+  }, [i18n.language, direction]);
+
   const [initialized, setInitialized] = useState(false);
   const [rowsInput, setRowsInput] = useState<number | ''>(4);
   const [colsInput, setColsInput] = useState<number | ''>(4);
@@ -30,7 +44,6 @@ export default function TableBuilder() {
   const [confirmAction, setConfirmAction] = useState<
     'word' | 'excel' | 'sql' | 'delete' | null
   >(null);
-  const [direction, setDirection] = useState<'rtl' | 'ltr'>('rtl');
   const exportMenuRef = useRef<HTMLDivElement>(null);
 
   const [cells, setCells] = useState<string[][]>([]);
@@ -71,9 +84,9 @@ export default function TableBuilder() {
     setCells(newCells);
     setColWidths(Array.from({ length: c }, () => DEFAULT_COL_WIDTH));
     setRowHeights(Array.from({ length: r }, () => DEFAULT_ROW_HEIGHT));
-    setColNames(Array.from({ length: c }, (_, i) => `ستون ${i + 1}`));
-    setRowNames(Array.from({ length: r }, (_, i) => `ردیف ${i + 1}`));
-    setFileName(newTableFileName.trim() || 'جدول-من');
+    setColNames(Array.from({ length: c }, (_, i) => `${t('table.columnPrefix')} ${i + 1}`));
+    setRowNames(Array.from({ length: r }, (_, i) => `${t('table.rowPrefix')} ${i + 1}`));
+    setFileName(newTableFileName.trim() || t('newTable.defaultFileName'));
     setInitialized(true);
     setShowNewTableDialog(false);
   }
@@ -96,34 +109,32 @@ export default function TableBuilder() {
 
   const confirmDialogContent = {
     word: {
-      title: 'خروجی Word',
-      description: 'جدول فعلی به‌صورت فایل Word دانلود می‌شه. مطمئنی می‌خوای ادامه بدی؟',
-      confirmLabel: 'بله، دانلود کن',
+      title: t('confirm.word.title'),
+      description: t('confirm.word.description'),
+      confirmLabel: t('confirm.word.confirmLabel'),
       danger: false,
       action: () =>
         exportToWord(fileName, cells, colWidths, colNames, rowNames, rowHeights),
     },
     excel: {
-      title: 'خروجی Excel',
-      description: 'جدول فعلی به‌صورت فایل Excel دانلود می‌شه. مطمئنی می‌خوای ادامه بدی؟',
-      confirmLabel: 'بله، دانلود کن',
+      title: t('confirm.excel.title'),
+      description: t('confirm.excel.description'),
+      confirmLabel: t('confirm.excel.confirmLabel'),
       danger: false,
       action: () =>
         exportToExcel(fileName, cells, colWidths, colNames, rowNames, rowHeights),
     },
     sql: {
-      title: 'خروجی SQL',
-      description:
-        'یه اسکریپت SQL شامل CREATE TABLE و INSERT از روی جدول فعلی ساخته و دانلود می‌شه. مطمئنی می‌خوای ادامه بدی؟',
-      confirmLabel: 'بله، دانلود کن',
+      title: t('confirm.sql.title'),
+      description: t('confirm.sql.description'),
+      confirmLabel: t('confirm.sql.confirmLabel'),
       danger: false,
       action: () => exportToSQL(fileName, cells, colNames, rowNames),
     },
     delete: {
-      title: 'حذف جدول',
-      description:
-        'با این کار جدول فعلی و تمام داده‌هاش برای همیشه پاک می‌شه و به صفحه‌ی شروع برمی‌گردی. این عمل قابل بازگشت نیست.',
-      confirmLabel: 'بله، حذف کن',
+      title: t('confirm.delete.title'),
+      description: t('confirm.delete.description'),
+      confirmLabel: t('confirm.delete.confirmLabel'),
       danger: true,
       action: deleteTable,
     },
@@ -162,13 +173,13 @@ export default function TableBuilder() {
   function addColumn() {
     setCells((prev) => prev.map((row) => [...row, '']));
     setColWidths((prev) => [...prev, DEFAULT_COL_WIDTH]);
-    setColNames((prev) => [...prev, `ستون ${prev.length + 1}`]);
+    setColNames((prev) => [...prev, `${t('table.columnPrefix')} ${prev.length + 1}`]);
   }
 
   function addRow() {
     setCells((prev) => [...prev, Array.from({ length: colWidths.length }, () => '')]);
     setRowHeights((prev) => [...prev, DEFAULT_ROW_HEIGHT]);
-    setRowNames((prev) => [...prev, `ردیف ${prev.length + 1}`]);
+    setRowNames((prev) => [...prev, `${t('table.rowPrefix')} ${prev.length + 1}`]);
   }
 
   function removeColumn(index: number) {
@@ -294,18 +305,22 @@ export default function TableBuilder() {
       <header className="flex shrink-0 items-center justify-between rounded-lg border border-slate-800 bg-slate-900 px-5 py-3 shadow-lg shadow-black/30">
         <div className="flex items-center gap-3">
           <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-600 text-sm font-bold text-white">
-            جد
+            {t('header.brand')}
           </span>
           <div>
-            <h1 className="text-lg font-bold text-slate-100">سازنده جدول</h1>
-            <p className="mt-0.5 text-xs text-slate-500">مدیریت و اکسپورت جدول</p>
+            <h1 className="text-lg font-bold text-slate-100">{t('header.title')}</h1>
+            <p className="mt-0.5 text-xs text-slate-500">{t('header.subtitle')}</p>
           </div>
           <button
-            onClick={() => setDirection((d) => (d === 'rtl' ? 'ltr' : 'rtl'))}
-            className="mr-2 flex items-center gap-1.5 rounded-full border border-slate-700 px-3 py-1.5 text-xs font-medium text-slate-300 hover:bg-slate-800"
-            title="تغییر جهت صفحه و جدول"
+            onClick={toggleLanguage}
+            className="mr-2 flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-300"
+            title={t('header.switchLanguage')}
           >
-            ⇄ {direction === 'rtl' ? 'راست‌به‌چپ' : 'چپ‌به‌راست'}
+            <Icon
+                  icon={direction === 'rtl' ? 'emojione-monotone:flag-for-united-states' : 'emojione-monotone:flag-for-armenia'}
+                  width={21}
+                  height={21}
+                />
           </button>
         </div>
         {initialized && (
@@ -315,7 +330,7 @@ export default function TableBuilder() {
                 onClick={() => setShowExportMenu((v) => !v)}
                 className="flex items-center gap-1.5 rounded-lg bg-indigo-600 px-4 py-2 text-xs font-medium text-white hover:bg-indigo-500"
               >
-                خروجی گرفتن
+                {t('export.button')}
                 <Icon
                   icon="mingcute:down-line"
                   width="14"
@@ -336,7 +351,7 @@ export default function TableBuilder() {
                     className="flex w-full items-center gap-2 px-3 py-2 text-right text-xs font-medium text-slate-200 hover:bg-slate-800"
                   >
                     <span className="h-2 w-2 rounded-full bg-[#2461CA]" />
-                    خروجی Word
+                    {t('export.word')}
                   </button>
                   <button
                     onClick={() => {
@@ -346,7 +361,7 @@ export default function TableBuilder() {
                     className="flex w-full items-center gap-2 px-3 py-2 text-right text-xs font-medium text-slate-200 hover:bg-slate-800"
                   >
                     <span className="h-2 w-2 rounded-full bg-[#0F7937]" />
-                    خروجی Excel
+                    {t('export.excel')}
                   </button>
                   <button
                     onClick={() => {
@@ -354,10 +369,10 @@ export default function TableBuilder() {
                       setShowExportMenu(false);
                     }}
                     className="flex w-full items-center gap-2 px-3 py-2 text-right text-xs font-medium text-slate-200 hover:bg-slate-800"
-                    title="فایل SQL شامل CREATE TABLE و INSERT"
+                    title={t('export.sqlTitle')}
                   >
                     <span className="h-2 w-2 rounded-full bg-[#d6771d]" />
-                    خروجی SQL
+                    {t('export.sql')}
                   </button>
                 </div>
               )}
@@ -366,7 +381,7 @@ export default function TableBuilder() {
               onClick={() => setConfirmAction('delete')}
               className="rounded-lg border border-red-800 px-4 py-2 text-xs font-medium text-red-400 hover:bg-red-950"
             >
-              حذف جدول
+              {t('export.deleteTable')}
             </button>
           </div>
         )}
@@ -379,7 +394,7 @@ export default function TableBuilder() {
           {initialized && (
             <div>
               <label className="mb-1 block text-xs font-medium text-slate-400">
-                نام فایل خروجی
+                {t('sidebar.fileNameLabel')}
               </label>
               <input
                 type="text"
@@ -392,14 +407,14 @@ export default function TableBuilder() {
 
           {initialized && (
             <div className="flex flex-col gap-2">
-              <span className="text-xs font-medium text-slate-400">ویرایش جدول</span>
+              <span className="text-xs font-medium text-slate-400">{t('sidebar.editTable')}</span>
               <button
                 onClick={addRow}
                 className="flex items-center gap-2 rounded-lg bg-slate-800 px-3 py-2.5 text-sm font-medium text-slate-200 hover:bg-slate-700"
               >
                 <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-600/20 text-indigo-400">
                   <Icon icon="material-symbols:add-row-below-outline-rounded" width="24" height="24" /></span>
-                افزودن ردیف
+                {t('sidebar.addRow')}
               </button>
               <button
                 onClick={addColumn}
@@ -407,7 +422,7 @@ export default function TableBuilder() {
               >
                 <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-600/20 text-indigo-400">
                   <Icon icon="flowbite:add-column-after-outline" width="24" height="24" /></span>
-                افزودن ستون
+                {t('sidebar.addColumn')}
               </button>
             </div>
           )}
@@ -416,19 +431,19 @@ export default function TableBuilder() {
             <div className="flex flex-col gap-2 rounded-lg border border-slate-800 bg-slate-800/50 p-3 text-[11px] leading-5 text-slate-400">
               <div className="flex items-start gap-1.5">
                 <Icon icon="carbon:dot-mark" width="14" height="14" className="mt-0.5 shrink-0 text-indigo-400" />
-                <span>برای تغییر اندازه ستون لبه‌ی راست هر ستون رو بگیر و drag کن تا اندازه‌ش عوض بشه.</span>
+                <span>{t('sidebar.tipResizeCol')}</span>
               </div>
               <div className="flex items-start gap-1.5">
                 <Icon icon="carbon:dot-mark" width="14" height="14" className="mt-0.5 shrink-0 text-indigo-400" />
-                <span>برای تغییر اندازه ردیف پایین هر ردیف رو بگیر و drag کن تا اندازه‌ش عوض بشه.</span>
+                <span>{t('sidebar.tipResizeRow')}</span>
               </div>
               <div className="flex items-start gap-1.5">
                 <Icon icon="carbon:dot-mark" width="14" height="14" className="mt-0.5 shrink-0 text-indigo-400" />
-                <span>برای جابجایی ستون و ردیف ایکون ⠿ رو بگیر و بکش تا جابجا بشه.</span>
+                <span>{t('sidebar.tipMove')}</span>
               </div>
               <div className="flex items-start gap-1.5">
                 <Icon icon="carbon:dot-mark" width="14" height="14" className="mt-0.5 shrink-0 text-indigo-400" />
-                <span>برای تغییر اسم ستون، ردیف و سلول روش دوبار کلیک کن و اسمشو عوض کن.</span>
+                <span>{t('sidebar.tipRename')}</span>
               </div>
             </div>
           </div>
@@ -464,7 +479,7 @@ export default function TableBuilder() {
                             draggable
                             onDragStart={() => handleColDragStart(ci)}
                             className="cursor-grab select-none text-slate-500 active:cursor-grabbing"
-                            title="جابجایی ستون"
+                            title={t('table.moveColumn')}
                           >
                             <Icon icon="charm:grab-vertical" width="14" height="14" />
                           </span>
@@ -472,13 +487,14 @@ export default function TableBuilder() {
                             value={colNames[ci] ?? ''}
                             onChange={(v) => updateColName(ci, v)}
                             align="center"
+                            dir={direction}
                             className="flex-1 text-xs font-medium text-slate-200"
                             inputClassName="flex-1 text-center text-xs font-medium text-white"
                           />
                           <button
                             onClick={() => removeColumn(ci)}
                             className="text-slate-600 hover:text-red-400"
-                            title="حذف ستون"
+                            title={t('table.removeColumn')}
                           >
                             <Icon icon="ant-design:close-outlined" width="14" height="14" />
                           </button>
@@ -506,20 +522,21 @@ export default function TableBuilder() {
                             draggable
                             onDragStart={() => handleRowDragStart(ri)}
                             className="cursor-grab select-none text-slate-500 active:cursor-grabbing"
-                            title="جابجایی ردیف"
+                            title={t('table.moveRow')}
                           >
                             <Icon icon="charm:grab-horizontal" width="14" height="14" />
                           </span>
                           <EditableText
                             value={rowNames[ri] ?? ''}
                             onChange={(v) => updateRowName(ri, v)}
+                            dir={direction}
                             className="flex-1 text-xs font-medium text-slate-200"
                             inputClassName="flex-1 text-xs font-medium text-white"
                           />
                           <button
                             onClick={() => removeRow(ri)}
                             className="text-slate-600 hover:text-red-400"
-                            title="حذف ردیف"
+                            title={t('table.removeRow')}
                           >
                             <Icon icon="ant-design:close-outlined" width="14" height="14" />
                           </button>
@@ -540,6 +557,7 @@ export default function TableBuilder() {
                               value={value}
                               onChange={(v) => updateCell(ri, ci, v)}
                               align="center"
+                              dir={direction}
                               className="text-sm text-slate-100"
                               inputClassName="text-sm text-slate-100 text-center"
                             />
@@ -556,13 +574,13 @@ export default function TableBuilder() {
             <div className="flex h-full items-center justify-center">
               <div className="flex flex-col items-center gap-4 rounded-lg border border-slate-800 bg-slate-900 px-10 py-8 text-center shadow-lg">
                 <p className="text-sm leading-6 text-slate-400">
-                  هنوز جدولی نساختی. برای شروع، اندازه‌ی جدول رو مشخص کن و یه جدول جدید بساز.
+                  {t('emptyState.message')}
                 </p>
                 <button
                   onClick={openNewTableDialog}
                   className="rounded-lg bg-indigo-600 px-5 py-2.5 font-medium text-white hover:bg-indigo-500"
                 >
-                  ساخت جدول
+                  {t('emptyState.createButton')}
                 </button>
               </div>
             </div>

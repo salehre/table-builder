@@ -7,7 +7,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Vazirmatn', 'Tahoma', 'sans-serif'],
+        sans: ['Vazirmatn FD', 'Inter', 'Tahoma', 'sans-serif'],
       },
     },
   },

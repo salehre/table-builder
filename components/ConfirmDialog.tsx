@@ -1,5 +1,7 @@
 'use client';
 
+import { useTranslation } from 'react-i18next';
+
 interface ConfirmDialogProps {
   title: string;
   description: string;
@@ -17,6 +19,7 @@ export default function ConfirmDialog({
   onConfirm,
   onClose,
 }: ConfirmDialogProps) {
+  const { t } = useTranslation();
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
       <div className="w-full max-w-sm rounded-2xl border border-slate-800 bg-slate-900 p-7 shadow-xl">
@@ -28,7 +31,7 @@ export default function ConfirmDialog({
             onClick={onClose}
             className="flex-1 rounded-lg border border-slate-700 px-4 py-2.5 font-medium text-slate-300 hover:bg-slate-800"
           >
-            انصراف
+            {t('common.cancel')}
           </button>
           <button
             onClick={onConfirm}
