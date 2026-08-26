@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { exportToWord, exportToExcel, exportToSQL } from '@/lib/export';
 import EditableText from './EditableText';
 import NewTableDialog from './NewTableDialog';
@@ -21,14 +21,17 @@ function reorder<T>(arr: T[], from: number, to: number): T[] {
 
 export default function TableBuilder() {
   const [initialized, setInitialized] = useState(false);
-  const [rowsInput, setRowsInput] = useState(4);
-  const [colsInput, setColsInput] = useState(4);
+  const [rowsInput, setRowsInput] = useState<number | ''>(4);
+  const [colsInput, setColsInput] = useState<number | ''>(4);
   const [fileName, setFileName] = useState('جدول-من');
+  const [newTableFileName, setNewTableFileName] = useState('');
   const [showNewTableDialog, setShowNewTableDialog] = useState(false);
+  const [showExportMenu, setShowExportMenu] = useState(false);
   const [confirmAction, setConfirmAction] = useState<
     'word' | 'excel' | 'sql' | 'delete' | null
   >(null);
   const [direction, setDirection] = useState<'rtl' | 'ltr'>('rtl');
+  const exportMenuRef = useRef<HTMLDivElement>(null);
 
   const [cells, setCells] = useState<string[][]>([]);
   const [colWidths, setColWidths] = useState<number[]>([]);
@@ -48,9 +51,20 @@ export default function TableBuilder() {
     startSize: number;
   } | null>(null);
 
+  useEffect(() => {
+    if (!showExportMenu) return;
+    function handleOutsideClick(e: MouseEvent) {
+      if (exportMenuRef.current && !exportMenuRef.current.contains(e.target as Node)) {
+        setShowExportMenu(false);
+      }
+    }
+    window.addEventListener('mousedown', handleOutsideClick);
+    return () => window.removeEventListener('mousedown', handleOutsideClick);
+  }, [showExportMenu]);
+
   function createTable() {
-    const r = Math.max(1, Math.min(200, rowsInput));
-    const c = Math.max(1, Math.min(50, colsInput));
+    const r = Math.max(1, Math.min(200, Number(rowsInput) || 0));
+    const c = Math.max(1, Math.min(50, Number(colsInput) || 0));
     const newCells: string[][] = Array.from({ length: r }, () =>
       Array.from({ length: c }, () => '')
     );
@@ -59,8 +73,16 @@ export default function TableBuilder() {
     setRowHeights(Array.from({ length: r }, () => DEFAULT_ROW_HEIGHT));
     setColNames(Array.from({ length: c }, (_, i) => `ستون ${i + 1}`));
     setRowNames(Array.from({ length: r }, (_, i) => `ردیف ${i + 1}`));
+    setFileName(newTableFileName.trim() || 'جدول-من');
     setInitialized(true);
     setShowNewTableDialog(false);
+  }
+
+  function openNewTableDialog() {
+    setRowsInput('');
+    setColsInput('');
+    setNewTableFileName('');
+    setShowNewTableDialog(true);
   }
 
   function deleteTable() {
@@ -194,7 +216,8 @@ export default function TableBuilder() {
     const state = resizingRef.current;
     if (!state) return;
     if (state.type === 'col') {
-      const delta = e.clientX - state.startPos;
+      const rawDelta = e.clientX - state.startPos;
+      const delta = direction === 'rtl' ? -rawDelta : rawDelta;
       const newWidth = Math.max(MIN_COL_WIDTH, state.startSize + delta);
       setColWidths((prev) => {
         const next = [...prev];
@@ -287,25 +310,58 @@ export default function TableBuilder() {
         </div>
         {initialized && (
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => setConfirmAction('word')}
-              className="rounded-lg bg-[#2461CA] px-4 py-2 text-xs font-medium text-white hover:bg-[#1148a7]"
-            >
-              خروجی Word
-            </button>
-            <button
-              onClick={() => setConfirmAction('excel')}
-              className="rounded-lg bg-[#0F7937] px-4 py-2 text-xs font-medium text-white hover:bg-[#045c26]"
-            >
-              خروجی Excel
-            </button>
-            <button
-              onClick={() => setConfirmAction('sql')}
-              className="rounded-lg bg-[#d6771d] px-4 py-2 text-xs font-medium text-white hover:bg-[#b85f1a]"
-              title="فایل SQL شامل CREATE TABLE و INSERT"
-            >
-              SQL
-            </button>
+            <div className="relative" ref={exportMenuRef}>
+              <button
+                onClick={() => setShowExportMenu((v) => !v)}
+                className="flex items-center gap-1.5 rounded-lg bg-indigo-600 px-4 py-2 text-xs font-medium text-white hover:bg-indigo-500"
+              >
+                خروجی گرفتن
+                <Icon
+                  icon="mingcute:down-line"
+                  width="14"
+                  height="14"
+                  className={`transition-transform ${showExportMenu ? 'rotate-180' : ''}`}
+                />
+              </button>
+              {showExportMenu && (
+                <div
+                  className={`absolute top-full z-20 mt-2 w-44 overflow-hidden rounded-lg border border-slate-800 bg-slate-900 py-1 shadow-xl shadow-black/40 ${direction === 'rtl' ? 'right-0' : 'left-0'
+                    }`}
+                >
+                  <button
+                    onClick={() => {
+                      setConfirmAction('word');
+                      setShowExportMenu(false);
+                    }}
+                    className="flex w-full items-center gap-2 px-3 py-2 text-right text-xs font-medium text-slate-200 hover:bg-slate-800"
+                  >
+                    <span className="h-2 w-2 rounded-full bg-[#2461CA]" />
+                    خروجی Word
+                  </button>
+                  <button
+                    onClick={() => {
+                      setConfirmAction('excel');
+                      setShowExportMenu(false);
+                    }}
+                    className="flex w-full items-center gap-2 px-3 py-2 text-right text-xs font-medium text-slate-200 hover:bg-slate-800"
+                  >
+                    <span className="h-2 w-2 rounded-full bg-[#0F7937]" />
+                    خروجی Excel
+                  </button>
+                  <button
+                    onClick={() => {
+                      setConfirmAction('sql');
+                      setShowExportMenu(false);
+                    }}
+                    className="flex w-full items-center gap-2 px-3 py-2 text-right text-xs font-medium text-slate-200 hover:bg-slate-800"
+                    title="فایل SQL شامل CREATE TABLE و INSERT"
+                  >
+                    <span className="h-2 w-2 rounded-full bg-[#d6771d]" />
+                    خروجی SQL
+                  </button>
+                </div>
+              )}
+            </div>
             <button
               onClick={() => setConfirmAction('delete')}
               className="rounded-lg border border-red-800 px-4 py-2 text-xs font-medium text-red-400 hover:bg-red-950"
@@ -385,6 +441,8 @@ export default function TableBuilder() {
                     {colWidths.map((w, ci) => (
                       <th
                         key={ci}
+                        onDragOver={(e) => handleColDragOver(e, ci)}
+                        onDrop={() => handleColDrop(ci)}
                         className={`relative border border-slate-700 bg-slate-800 p-0 text-xs font-medium text-slate-300 ${dragOverCol === ci ? 'bg-indigo-900/50' : ''
                           }`}
                       >
@@ -392,8 +450,6 @@ export default function TableBuilder() {
                           <span
                             draggable
                             onDragStart={() => handleColDragStart(ci)}
-                            onDragOver={(e) => handleColDragOver(e, ci)}
-                            onDrop={() => handleColDrop(ci)}
                             className="cursor-grab select-none text-slate-500 active:cursor-grabbing"
                             title="جابجایی ستون"
                           >
@@ -426,6 +482,8 @@ export default function TableBuilder() {
                   {cells.map((row, ri) => (
                     <tr key={ri}>
                       <td
+                        onDragOver={(e) => handleRowDragOver(e, ri)}
+                        onDrop={() => handleRowDrop(ri)}
                         className={`relative border border-slate-700 bg-slate-800 p-0 text-xs text-slate-300 ${dragOverRow === ri ? 'bg-indigo-900/50' : ''
                           }`}
                         style={{ height: rowHeights[ri] }}
@@ -434,8 +492,6 @@ export default function TableBuilder() {
                           <span
                             draggable
                             onDragStart={() => handleRowDragStart(ri)}
-                            onDragOver={(e) => handleRowDragOver(e, ri)}
-                            onDrop={() => handleRowDrop(ri)}
                             className="cursor-grab select-none text-slate-500 active:cursor-grabbing"
                             title="جابجایی ردیف"
                           >
@@ -490,10 +546,10 @@ export default function TableBuilder() {
                   هنوز جدولی نساختی. برای شروع، اندازه‌ی جدول رو مشخص کن و یه جدول جدید بساز.
                 </p>
                 <button
-                  onClick={() => setShowNewTableDialog(true)}
+                  onClick={openNewTableDialog}
                   className="rounded-lg bg-indigo-600 px-5 py-2.5 font-medium text-white hover:bg-indigo-500"
                 >
-                  + ساخت جدول
+                   ساخت جدول
                 </button>
               </div>
             </div>
@@ -505,10 +561,10 @@ export default function TableBuilder() {
         <NewTableDialog
           rowsInput={rowsInput}
           colsInput={colsInput}
-          fileName={fileName}
+          fileName={newTableFileName}
           setRowsInput={setRowsInput}
           setColsInput={setColsInput}
-          setFileName={setFileName}
+          setFileName={setNewTableFileName}
           onCreate={createTable}
           onClose={() => setShowNewTableDialog(false)}
           canCancel={initialized}
