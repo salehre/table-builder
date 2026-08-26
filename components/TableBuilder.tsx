@@ -413,10 +413,23 @@ export default function TableBuilder() {
           )}
 
           <div className="mt-auto flex flex-col gap-3">
-            <div className="rounded-lg border border-slate-800 bg-slate-800/50 p-3 text-[11px] leading-5 text-slate-400">
-              لبه‌ی راست هر ستون یا پایین هر ردیف رو بگیر و بکش تا اندازه‌ش عوض بشه.
-              آیکون ⠿ رو بگیر و بکش تا جابجا بشه. روی نام ردیف/ستون کلیک کن تا ویرایشش
-              کنی.
+            <div className="flex flex-col gap-2 rounded-lg border border-slate-800 bg-slate-800/50 p-3 text-[11px] leading-5 text-slate-400">
+              <div className="flex items-start gap-1.5">
+                <Icon icon="carbon:dot-mark" width="14" height="14" className="mt-0.5 shrink-0 text-indigo-400" />
+                <span>برای تغییر اندازه ستون لبه‌ی راست هر ستون رو بگیر و drag کن تا اندازه‌ش عوض بشه.</span>
+              </div>
+              <div className="flex items-start gap-1.5">
+                <Icon icon="carbon:dot-mark" width="14" height="14" className="mt-0.5 shrink-0 text-indigo-400" />
+                <span>برای تغییر اندازه ردیف پایین هر ردیف رو بگیر و drag کن تا اندازه‌ش عوض بشه.</span>
+              </div>
+              <div className="flex items-start gap-1.5">
+                <Icon icon="carbon:dot-mark" width="14" height="14" className="mt-0.5 shrink-0 text-indigo-400" />
+                <span>برای جابجایی ستون و ردیف ایکون ⠿ رو بگیر و بکش تا جابجا بشه.</span>
+              </div>
+              <div className="flex items-start gap-1.5">
+                <Icon icon="carbon:dot-mark" width="14" height="14" className="mt-0.5 shrink-0 text-indigo-400" />
+                <span>برای تغییر اسم ستون، ردیف و سلول روش دوبار کلیک کن و اسمشو عوض کن.</span>
+              </div>
             </div>
           </div>
         </aside>
@@ -549,7 +562,7 @@ export default function TableBuilder() {
                   onClick={openNewTableDialog}
                   className="rounded-lg bg-indigo-600 px-5 py-2.5 font-medium text-white hover:bg-indigo-500"
                 >
-                   ساخت جدول
+                  + ساخت جدول
                 </button>
               </div>
             </div>
