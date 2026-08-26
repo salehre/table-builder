@@ -5,6 +5,7 @@ import { exportToWord, exportToExcel, exportToSQL } from '@/lib/export';
 import EditableText from './EditableText';
 import NewTableDialog from './NewTableDialog';
 import ConfirmDialog from './ConfirmDialog';
+import { Icon } from '@iconify/react';
 
 const DEFAULT_COL_WIDTH = 130;
 const DEFAULT_ROW_HEIGHT = 40;
@@ -303,13 +304,13 @@ export default function TableBuilder() {
               className="rounded-lg bg-[#d6771d] px-4 py-2 text-xs font-medium text-white hover:bg-[#b85f1a]"
               title="فایل SQL شامل CREATE TABLE و INSERT"
             >
-              خروجی SQL
+             SQL
             </button>
             <button
               onClick={() => setConfirmAction('delete')}
               className="rounded-lg border border-red-800 px-4 py-2 text-xs font-medium text-red-400 hover:bg-red-950"
             >
-              حذف و شروع جدول جدید
+              حذف جدول
             </button>
           </div>
         )}
@@ -340,14 +341,16 @@ export default function TableBuilder() {
             onClick={addRow}
             className="flex items-center gap-2 rounded-lg bg-slate-800 px-3 py-2.5 text-sm font-medium text-slate-200 hover:bg-slate-700"
           >
-            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-600/20 text-indigo-400">+</span>
+            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-600/20 text-indigo-400">
+            <Icon icon="material-symbols:add-row-below-outline-rounded" width="24" height="24" /></span>
             افزودن ردیف
           </button>
           <button
             onClick={addColumn}
             className="flex items-center gap-2 rounded-lg bg-slate-800 px-3 py-2.5 text-sm font-medium text-slate-200 hover:bg-slate-700"
           >
-            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-600/20 text-indigo-400">+</span>
+            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-600/20 text-indigo-400">
+            <Icon icon="flowbite:add-column-after-outline" width="24" height="24" /></span>
             افزودن ستون
           </button>
         </div>
@@ -395,7 +398,7 @@ export default function TableBuilder() {
                         className="cursor-grab select-none text-slate-500 active:cursor-grabbing"
                         title="جابجایی ستون"
                       >
-                        ⠿
+                        <Icon icon="charm:grab-vertical" width="14" height="14" />
                       </span>
                         <EditableText
                           value={colNames[ci] ?? ''}
@@ -409,7 +412,7 @@ export default function TableBuilder() {
                         className="text-slate-600 hover:text-red-400"
                         title="حذف ستون"
                       >
-                        ×
+                        <Icon icon="ant-design:close-outlined" width="14" height="14" />
                       </button>
                     </div>
                     <div
@@ -438,7 +441,7 @@ export default function TableBuilder() {
                         className="cursor-grab select-none text-slate-500 active:cursor-grabbing"
                         title="جابجایی ردیف"
                       >
-                        ⠿
+                        <Icon icon="charm:grab-horizontal" width="14" height="14" />
                       </span>
                       <EditableText
                         value={rowNames[ri] ?? ''}
@@ -451,7 +454,7 @@ export default function TableBuilder() {
                         className="text-slate-600 hover:text-red-400"
                         title="حذف ردیف"
                       >
-                        ×
+                        <Icon icon="ant-design:close-outlined" width="14" height="14" />
                       </button>
                     </div>
                     <div
