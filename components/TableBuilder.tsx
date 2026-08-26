@@ -562,7 +562,7 @@ export default function TableBuilder() {
                   onClick={openNewTableDialog}
                   className="rounded-lg bg-indigo-600 px-5 py-2.5 font-medium text-white hover:bg-indigo-500"
                 >
-                  + ساخت جدول
+                  ساخت جدول
                 </button>
               </div>
             </div>
