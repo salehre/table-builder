@@ -304,7 +304,7 @@ export default function TableBuilder() {
               className="rounded-lg bg-[#d6771d] px-4 py-2 text-xs font-medium text-white hover:bg-[#b85f1a]"
               title="فایل SQL شامل CREATE TABLE و INSERT"
             >
-             SQL
+              SQL
             </button>
             <button
               onClick={() => setConfirmAction('delete')}
@@ -317,216 +317,214 @@ export default function TableBuilder() {
       </header>
 
       <div className="flex flex-1 gap-4 overflow-hidden">
-      {/* سایدبار */}
-      <aside className="flex h-full w-72 shrink-0 flex-col gap-5 overflow-hidden rounded-lg border border-slate-800 bg-slate-900 p-5 shadow-lg shadow-black/30">
+        {/* سایدبار */}
+        <aside className="flex h-full w-72 shrink-0 flex-col gap-5 overflow-hidden rounded-lg border border-slate-800 bg-slate-900 p-5 shadow-lg shadow-black/30">
 
-{initialized && (
-        <div>
-          <label className="mb-1 block text-xs font-medium text-slate-400">
-            نام فایل خروجی
-          </label>
-          <input
-            type="text"
-            value={fileName}
-            onChange={(e) => setFileName(e.target.value)}
-            className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:border-indigo-500 focus:outline-none"
-          />
-        </div>
-              )}
+          {initialized && (
+            <div>
+              <label className="mb-1 block text-xs font-medium text-slate-400">
+                نام فایل خروجی
+              </label>
+              <input
+                type="text"
+                value={fileName}
+                onChange={(e) => setFileName(e.target.value)}
+                className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:border-indigo-500 focus:outline-none"
+              />
+            </div>
+          )}
 
-{initialized && (
-        <div className="flex flex-col gap-2">
-          <span className="text-xs font-medium text-slate-400">ویرایش جدول</span>
-          <button
-            onClick={addRow}
-            className="flex items-center gap-2 rounded-lg bg-slate-800 px-3 py-2.5 text-sm font-medium text-slate-200 hover:bg-slate-700"
-          >
-            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-600/20 text-indigo-400">
-            <Icon icon="material-symbols:add-row-below-outline-rounded" width="24" height="24" /></span>
-            افزودن ردیف
-          </button>
-          <button
-            onClick={addColumn}
-            className="flex items-center gap-2 rounded-lg bg-slate-800 px-3 py-2.5 text-sm font-medium text-slate-200 hover:bg-slate-700"
-          >
-            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-600/20 text-indigo-400">
-            <Icon icon="flowbite:add-column-after-outline" width="24" height="24" /></span>
-            افزودن ستون
-          </button>
-        </div>
-        )}
+          {initialized && (
+            <div className="flex flex-col gap-2">
+              <span className="text-xs font-medium text-slate-400">ویرایش جدول</span>
+              <button
+                onClick={addRow}
+                className="flex items-center gap-2 rounded-lg bg-slate-800 px-3 py-2.5 text-sm font-medium text-slate-200 hover:bg-slate-700"
+              >
+                <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-600/20 text-indigo-400">
+                  <Icon icon="material-symbols:add-row-below-outline-rounded" width="24" height="24" /></span>
+                افزودن ردیف
+              </button>
+              <button
+                onClick={addColumn}
+                className="flex items-center gap-2 rounded-lg bg-slate-800 px-3 py-2.5 text-sm font-medium text-slate-200 hover:bg-slate-700"
+              >
+                <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-600/20 text-indigo-400">
+                  <Icon icon="flowbite:add-column-after-outline" width="24" height="24" /></span>
+                افزودن ستون
+              </button>
+            </div>
+          )}
 
-        <div className="mt-auto flex flex-col gap-3">
-          <div className="rounded-lg border border-slate-800 bg-slate-800/50 p-3 text-[11px] leading-5 text-slate-400">
-            لبه‌ی راست هر ستون یا پایین هر ردیف رو بگیر و بکش تا اندازه‌ش عوض بشه.
-            آیکون ⠿ رو بگیر و بکش تا جابجا بشه. روی نام ردیف/ستون کلیک کن تا ویرایشش
-            کنی.
+          <div className="mt-auto flex flex-col gap-3">
+            <div className="rounded-lg border border-slate-800 bg-slate-800/50 p-3 text-[11px] leading-5 text-slate-400">
+              لبه‌ی راست هر ستون یا پایین هر ردیف رو بگیر و بکش تا اندازه‌ش عوض بشه.
+              آیکون ⠿ رو بگیر و بکش تا جابجا بشه. روی نام ردیف/ستون کلیک کن تا ویرایشش
+              کنی.
+            </div>
           </div>
-        </div>
-      </aside>
+        </aside>
 
-      {/* محتوای اصلی */}
-      <main className="flex-1 overflow-auto p-6">
-        {initialized && (
-        <div
-          className="overflow-auto rounded-lg border border-slate-800 bg-slate-900 p-4"
-          dir={direction}
-        >
-          <table className="border-separate" style={{ borderSpacing: 0 }}>
-            <colgroup>
-              <col style={{ width: 130 }} />
-              {colWidths.map((w, i) => (
-                <col key={i} style={{ width: w }} />
-              ))}
-            </colgroup>
-            <thead>
-              <tr>
-                <th className="border border-slate-700 bg-slate-800" />
-                {colWidths.map((w, ci) => (
-                  <th
-                    key={ci}
-                    className={`relative border border-slate-700 bg-slate-800 p-0 text-xs font-medium text-slate-300 ${
-                      dragOverCol === ci ? 'bg-indigo-900/50' : ''
-                    }`}
-                  >
-                    <div className="flex h-9 items-center justify-between gap-1 px-1.5">
-                      <span
-                        draggable
-                        onDragStart={() => handleColDragStart(ci)}
-                        onDragOver={(e) => handleColDragOver(e, ci)}
-                        onDrop={() => handleColDrop(ci)}
-                        className="cursor-grab select-none text-slate-500 active:cursor-grabbing"
-                        title="جابجایی ستون"
-                      >
-                        <Icon icon="charm:grab-vertical" width="14" height="14" />
-                      </span>
-                        <EditableText
-                          value={colNames[ci] ?? ''}
-                          onChange={(v) => updateColName(ci, v)}
-                          align="center"
-                          className="flex-1 text-xs font-medium text-slate-200"
-                          inputClassName="flex-1 text-center text-xs font-medium text-white"
-                        />
-                      <button
-                        onClick={() => removeColumn(ci)}
-                        className="text-slate-600 hover:text-red-400"
-                        title="حذف ستون"
-                      >
-                        <Icon icon="ant-design:close-outlined" width="14" height="14" />
-                      </button>
-                    </div>
-                    <div
-                      onMouseDown={(e) => startColResize(e, ci)}
-                      className="absolute right-0 top-0 h-full w-1.5 cursor-col-resize hover:bg-indigo-500"
-                    />
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {cells.map((row, ri) => (
-                <tr key={ri}>
-                  <td
-                    className={`relative border border-slate-700 bg-slate-800 p-0 text-xs text-slate-300 ${
-                      dragOverRow === ri ? 'bg-indigo-900/50' : ''
-                    }`}
-                    style={{ height: rowHeights[ri] }}
-                  >
-                    <div className="flex h-full items-center gap-1 px-1.5">
-                      <span
-                        draggable
-                        onDragStart={() => handleRowDragStart(ri)}
-                        onDragOver={(e) => handleRowDragOver(e, ri)}
-                        onDrop={() => handleRowDrop(ri)}
-                        className="cursor-grab select-none text-slate-500 active:cursor-grabbing"
-                        title="جابجایی ردیف"
-                      >
-                        <Icon icon="charm:grab-horizontal" width="14" height="14" />
-                      </span>
-                      <EditableText
-                        value={rowNames[ri] ?? ''}
-                        onChange={(v) => updateRowName(ri, v)}
-                        className="flex-1 text-xs font-medium text-slate-200"
-                        inputClassName="flex-1 text-xs font-medium text-white"
-                      />
-                      <button
-                        onClick={() => removeRow(ri)}
-                        className="text-slate-600 hover:text-red-400"
-                        title="حذف ردیف"
-                      >
-                        <Icon icon="ant-design:close-outlined" width="14" height="14" />
-                      </button>
-                    </div>
-                    <div
-                      onMouseDown={(e) => startRowResize(e, ri)}
-                      className="absolute bottom-0 left-0 h-1.5 w-full cursor-row-resize hover:bg-indigo-500"
-                    />
-                  </td>
-                  {row.map((value, ci) => (
-                    <td
-                      key={ci}
-                      className="border border-slate-700 p-0"
-                      style={{ height: rowHeights[ri] }}
-                    >
-                    <div className="flex h-full items-center justify-center px-2">
-                      <EditableText
-                        value={value}
-                        onChange={(v) => updateCell(ri, ci, v)}
-                        align="center"
-                        className="text-sm text-slate-100"
-                        inputClassName="text-sm text-slate-100 text-center"
-                      />
-                    </div>
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        )}
-        {!initialized && (
-        <div className="flex h-full items-center justify-center">
-          <div className="flex flex-col items-center gap-4 rounded-lg border border-slate-800 bg-slate-900 px-10 py-8 text-center shadow-lg">
-            <p className="text-sm leading-6 text-slate-400">
-              هنوز جدولی نساختی. برای شروع، اندازه‌ی جدول رو مشخص کن و یه جدول جدید بساز.
-            </p>
-            <button
-              onClick={() => setShowNewTableDialog(true)}
-              className="rounded-lg bg-indigo-600 px-5 py-2.5 font-medium text-white hover:bg-indigo-500"
+        {/* محتوای اصلی */}
+        <main className="flex-1 overflow-auto p-6">
+          {initialized && (
+            <div
+              className="overflow-auto rounded-lg border border-slate-800 bg-slate-900 p-4"
+              dir={direction}
             >
-              + ساخت جدول
-            </button>
-          </div>
-        </div>
-        )}
-      </main>
+              <table className="border-separate" style={{ borderSpacing: 0 }}>
+                <colgroup>
+                  <col style={{ width: 130 }} />
+                  {colWidths.map((w, i) => (
+                    <col key={i} style={{ width: w }} />
+                  ))}
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th className="border border-slate-700 bg-slate-800" />
+                    {colWidths.map((w, ci) => (
+                      <th
+                        key={ci}
+                        className={`relative border border-slate-700 bg-slate-800 p-0 text-xs font-medium text-slate-300 ${dragOverCol === ci ? 'bg-indigo-900/50' : ''
+                          }`}
+                      >
+                        <div className="flex h-9 items-center justify-between gap-1 px-1.5">
+                          <span
+                            draggable
+                            onDragStart={() => handleColDragStart(ci)}
+                            onDragOver={(e) => handleColDragOver(e, ci)}
+                            onDrop={() => handleColDrop(ci)}
+                            className="cursor-grab select-none text-slate-500 active:cursor-grabbing"
+                            title="جابجایی ستون"
+                          >
+                            <Icon icon="charm:grab-vertical" width="14" height="14" />
+                          </span>
+                          <EditableText
+                            value={colNames[ci] ?? ''}
+                            onChange={(v) => updateColName(ci, v)}
+                            align="center"
+                            className="flex-1 text-xs font-medium text-slate-200"
+                            inputClassName="flex-1 text-center text-xs font-medium text-white"
+                          />
+                          <button
+                            onClick={() => removeColumn(ci)}
+                            className="text-slate-600 hover:text-red-400"
+                            title="حذف ستون"
+                          >
+                            <Icon icon="ant-design:close-outlined" width="14" height="14" />
+                          </button>
+                        </div>
+                        <div
+                          onMouseDown={(e) => startColResize(e, ci)}
+                          className="absolute right-0 top-0 h-full w-1.5 cursor-col-resize hover:bg-indigo-500"
+                        />
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {cells.map((row, ri) => (
+                    <tr key={ri}>
+                      <td
+                        className={`relative border border-slate-700 bg-slate-800 p-0 text-xs text-slate-300 ${dragOverRow === ri ? 'bg-indigo-900/50' : ''
+                          }`}
+                        style={{ height: rowHeights[ri] }}
+                      >
+                        <div className="flex h-full items-center gap-1 px-1.5">
+                          <span
+                            draggable
+                            onDragStart={() => handleRowDragStart(ri)}
+                            onDragOver={(e) => handleRowDragOver(e, ri)}
+                            onDrop={() => handleRowDrop(ri)}
+                            className="cursor-grab select-none text-slate-500 active:cursor-grabbing"
+                            title="جابجایی ردیف"
+                          >
+                            <Icon icon="charm:grab-horizontal" width="14" height="14" />
+                          </span>
+                          <EditableText
+                            value={rowNames[ri] ?? ''}
+                            onChange={(v) => updateRowName(ri, v)}
+                            className="flex-1 text-xs font-medium text-slate-200"
+                            inputClassName="flex-1 text-xs font-medium text-white"
+                          />
+                          <button
+                            onClick={() => removeRow(ri)}
+                            className="text-slate-600 hover:text-red-400"
+                            title="حذف ردیف"
+                          >
+                            <Icon icon="ant-design:close-outlined" width="14" height="14" />
+                          </button>
+                        </div>
+                        <div
+                          onMouseDown={(e) => startRowResize(e, ri)}
+                          className="absolute bottom-0 left-0 h-1.5 w-full cursor-row-resize hover:bg-indigo-500"
+                        />
+                      </td>
+                      {row.map((value, ci) => (
+                        <td
+                          key={ci}
+                          className="border border-slate-700 p-0"
+                          style={{ height: rowHeights[ri] }}
+                        >
+                          <div className="flex h-full items-center justify-center px-2">
+                            <EditableText
+                              value={value}
+                              onChange={(v) => updateCell(ri, ci, v)}
+                              align="center"
+                              className="text-sm text-slate-100"
+                              inputClassName="text-sm text-slate-100 text-center"
+                            />
+                          </div>
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+          {!initialized && (
+            <div className="flex h-full items-center justify-center">
+              <div className="flex flex-col items-center gap-4 rounded-lg border border-slate-800 bg-slate-900 px-10 py-8 text-center shadow-lg">
+                <p className="text-sm leading-6 text-slate-400">
+                  هنوز جدولی نساختی. برای شروع، اندازه‌ی جدول رو مشخص کن و یه جدول جدید بساز.
+                </p>
+                <button
+                  onClick={() => setShowNewTableDialog(true)}
+                  className="rounded-lg bg-indigo-600 px-5 py-2.5 font-medium text-white hover:bg-indigo-500"
+                >
+                  + ساخت جدول
+                </button>
+              </div>
+            </div>
+          )}
+        </main>
       </div>
 
-        {showNewTableDialog && (
-          <NewTableDialog
-            rowsInput={rowsInput}
-            colsInput={colsInput}
-            fileName={fileName}
-            setRowsInput={setRowsInput}
-            setColsInput={setColsInput}
-            setFileName={setFileName}
-            onCreate={createTable}
-            onClose={() => setShowNewTableDialog(false)}
-            canCancel={initialized}
-          />
-        )}
+      {showNewTableDialog && (
+        <NewTableDialog
+          rowsInput={rowsInput}
+          colsInput={colsInput}
+          fileName={fileName}
+          setRowsInput={setRowsInput}
+          setColsInput={setColsInput}
+          setFileName={setFileName}
+          onCreate={createTable}
+          onClose={() => setShowNewTableDialog(false)}
+          canCancel={initialized}
+        />
+      )}
 
-        {confirmAction && (
-          <ConfirmDialog
-            title={confirmDialogContent[confirmAction].title}
-            description={confirmDialogContent[confirmAction].description}
-            confirmLabel={confirmDialogContent[confirmAction].confirmLabel}
-            danger={confirmDialogContent[confirmAction].danger}
-            onConfirm={runConfirmedAction}
-            onClose={() => setConfirmAction(null)}
-          />
-        )}
+      {confirmAction && (
+        <ConfirmDialog
+          title={confirmDialogContent[confirmAction].title}
+          description={confirmDialogContent[confirmAction].description}
+          confirmLabel={confirmDialogContent[confirmAction].confirmLabel}
+          danger={confirmDialogContent[confirmAction].danger}
+          onConfirm={runConfirmedAction}
+          onClose={() => setConfirmAction(null)}
+        />
+      )}
     </div>
   );
 }
