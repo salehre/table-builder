@@ -89,6 +89,12 @@ const resources = {
       editableText: {
         editHint: 'برای ویرایش دابل‌کلیک کن',
       },
+      toast: {
+        tableCreated: 'جدول «{{name}}» با موفقیت ساخته شد.',
+        tableNameRequired: 'برای ساخت جدول باید یه اسم وارد کنی.',
+        exportSuccess: 'خروجی {{format}} با موفقیت دانلود شد.',
+        exportError: 'مشکلی توی گرفتن خروجی پیش اومد. دوباره امتحان کن.',
+      },
     },
   },
   en: {
@@ -177,6 +183,12 @@ const resources = {
       },
       editableText: {
         editHint: 'Double-click to edit',
+      },
+      toast: {
+        tableCreated: 'Table "{{name}}" was created successfully.',
+        tableNameRequired: 'Please enter a name to create the table.',
+        exportSuccess: '{{format}} export downloaded successfully.',
+        exportError: 'Something went wrong while exporting. Please try again.',
       },
     },
   },

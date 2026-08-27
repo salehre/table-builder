@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast, Toaster } from 'sonner';
 import '@/lib/i18n';
 import { exportToWord, exportToExcel, exportToSQL } from '@/lib/export';
 import { loadTables, saveTables, createTableId, StoredTable } from '@/lib/storage';
@@ -100,7 +101,10 @@ export default function TableBuilder() {
     }, [showExportMenu]);
 
     function createTable() {
-        if (!newTableFileName.trim()) return;
+        if (!newTableFileName.trim()) {
+            toast.error(t('toast.tableNameRequired'));
+            return;
+        }
         const r = Math.max(1, Math.min(200, Number(rowsInput) || 0));
         const c = Math.max(1, Math.min(50, Number(colsInput) || 0));
         const newCells: string[][] = Array.from({ length: r }, () =>
@@ -140,6 +144,7 @@ export default function TableBuilder() {
         setCurrentTableId(id);
         setInitialized(true);
         setShowNewTableDialog(false);
+        toast.success(t('toast.tableCreated', { name }));
     }
 
     function openTable(id: string) {
@@ -353,23 +358,42 @@ export default function TableBuilder() {
             description: t('confirm.word.description'),
             confirmLabel: t('confirm.word.confirmLabel'),
             danger: false,
-            action: () =>
-                exportToWord(fileName, cells, colWidths, colNames, rowNames, rowHeights),
+            action: async () => {
+                try {
+                    await exportToWord(fileName, cells, colWidths, colNames, rowNames, rowHeights);
+                    toast.success(t('toast.exportSuccess', { format: t('export.word') }));
+                } catch {
+                    toast.error(t('toast.exportError'));
+                }
+            },
         },
         excel: {
             title: t('confirm.excel.title'),
             description: t('confirm.excel.description'),
             confirmLabel: t('confirm.excel.confirmLabel'),
             danger: false,
-            action: () =>
-                exportToExcel(fileName, cells, colWidths, colNames, rowNames, rowHeights),
+            action: async () => {
+                try {
+                    await exportToExcel(fileName, cells, colWidths, colNames, rowNames, rowHeights);
+                    toast.success(t('toast.exportSuccess', { format: t('export.excel') }));
+                } catch {
+                    toast.error(t('toast.exportError'));
+                }
+            },
         },
         sql: {
             title: t('confirm.sql.title'),
             description: t('confirm.sql.description'),
             confirmLabel: t('confirm.sql.confirmLabel'),
             danger: false,
-            action: () => exportToSQL(fileName, cells, colNames, rowNames, t('table.rowPrefix'), t('table.columnPrefix')),
+            action: async () => {
+                try {
+                    await exportToSQL(fileName, cells, colNames, rowNames, t('table.rowPrefix'), t('table.columnPrefix'));
+                    toast.success(t('toast.exportSuccess', { format: t('export.sql') }));
+                } catch {
+                    toast.error(t('toast.exportError'));
+                }
+            },
         },
         delete: {
             title: t('confirm.delete.title'),
@@ -541,6 +565,7 @@ export default function TableBuilder() {
             className="flex h-screen flex-col gap-4 overflow-hidden bg-slate-950 p-4"
             dir={direction}
         >
+            <Toaster richColors position={direction === 'rtl' ? 'bottom-left' : 'bottom-right'} dir={direction} />
             {/* هدر بالای صفحه */}
             <header className="flex shrink-0 items-center justify-between rounded-lg border border-slate-800 bg-slate-900 px-5 py-3 shadow-lg shadow-black/30">
                 <div className="flex items-center gap-3">
@@ -645,6 +670,27 @@ export default function TableBuilder() {
                         </div>
                     )}
 
+                    {initialized && currentTableId && (
+                        <div className="flex items-center gap-1.5">
+                            <TableSizeField
+                                icon="material-symbols:add-row-below-outline-rounded"
+                                value={cells.length}
+                                onChange={(n) => setTableRowCount(currentTableId, n)}
+                                title={t('sidebar.rowsCount')}
+                                min={1}
+                                max={200}
+                            />
+                            <TableSizeField
+                                icon="flowbite:add-column-after-outline"
+                                value={colWidths.length}
+                                onChange={(n) => setTableColCount(currentTableId, n)}
+                                title={t('sidebar.colsCount')}
+                                min={1}
+                                max={50}
+                            />
+                        </div>
+                    )}
+
                     {initialized && (
                         <div className="flex flex-col gap-2">
                             <span className="text-xs font-medium text-slate-400">{t('sidebar.editTable')}</span>
@@ -698,24 +744,26 @@ export default function TableBuilder() {
                                                     <Icon icon="ant-design:delete-outlined" width="15" height="15" />
                                                 </button>
                                             </div>
-                                            <div className="flex items-center gap-1.5 ps-6">
-                                                <TableSizeField
-                                                    icon="material-symbols:add-row-below-outline-rounded"
-                                                    value={tb.rowNames.length}
-                                                    onChange={(n) => setTableRowCount(tb.id, n)}
-                                                    title={t('sidebar.rowsCount')}
-                                                    min={1}
-                                                    max={200}
-                                                />
-                                                <TableSizeField
-                                                    icon="flowbite:add-column-after-outline"
-                                                    value={tb.colWidths.length}
-                                                    onChange={(n) => setTableColCount(tb.id, n)}
-                                                    title={t('sidebar.colsCount')}
-                                                    min={1}
-                                                    max={50}
-                                                />
-                                            </div>
+                                            {tb.id !== currentTableId && (
+                                                <div className="flex items-center gap-1.5 ps-6">
+                                                    <TableSizeField
+                                                        icon="material-symbols:add-row-below-outline-rounded"
+                                                        value={tb.rowNames.length}
+                                                        onChange={(n) => setTableRowCount(tb.id, n)}
+                                                        title={t('sidebar.rowsCount')}
+                                                        min={1}
+                                                        max={200}
+                                                    />
+                                                    <TableSizeField
+                                                        icon="flowbite:add-column-after-outline"
+                                                        value={tb.colWidths.length}
+                                                        onChange={(n) => setTableColCount(tb.id, n)}
+                                                        title={t('sidebar.colsCount')}
+                                                        min={1}
+                                                        max={50}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     ))}
                             </div>

@@ -19,9 +19,9 @@ const NAME_COL_WIDTH = 130;
 const HEADER_ROW_HEIGHT = 36;
 
 function buildFullGrid(
-  cells: string[][],
-  colNames: string[],
-  rowNames: string[]
+    cells: string[][],
+    colNames: string[],
+    rowNames: string[]
 ): string[][] {
   const headerRow = ['', ...colNames];
   const body = cells.map((row, ri) => [rowNames[ri] || '', ...row]);
@@ -29,12 +29,12 @@ function buildFullGrid(
 }
 
 export function exportToWord(
-  fileName: string,
-  cellsInput: string[][],
-  colWidthsInput: number[],
-  colNames: string[] = [],
-  rowNames: string[] = [],
-  rowHeightsInput: number[] = []
+    fileName: string,
+    cellsInput: string[][],
+    colWidthsInput: number[],
+    colNames: string[] = [],
+    rowNames: string[] = [],
+    rowHeightsInput: number[] = []
 ) {
   const cells = buildFullGrid(cellsInput, colNames, rowNames);
   const colWidths = [NAME_COL_WIDTH, ...colWidthsInput];
@@ -47,13 +47,13 @@ export function exportToWord(
     right: { style: BorderStyle.SINGLE, size: 2, color: 'CCCCCC' },
   };
 
-const rows = cells.map((row, rowIndex) => {
-  return new TableRow({
-    height: {
-      value: pxToDxa(rowHeights[rowIndex] || DEFAULT_ROW_HEIGHT_FALLBACK),
-      rule: 'atLeast',
-    },
-    children: row.map((cellText, colIndex) => {
+  const rows = cells.map((row, rowIndex) => {
+    return new TableRow({
+      height: {
+        value: pxToDxa(rowHeights[rowIndex] || DEFAULT_ROW_HEIGHT_FALLBACK),
+        rule: 'atLeast',
+      },
+      children: row.map((cellText, colIndex) => {
         return new TableCell({
           width: {
             size: pxToDxa(colWidths[colIndex] || 100),
@@ -88,18 +88,18 @@ const rows = cells.map((row, rowIndex) => {
     ],
   });
 
-  Packer.toBlob(doc).then((blob) => {
+  return Packer.toBlob(doc).then((blob) => {
     saveAs(blob, `${fileName}.docx`);
   });
 }
 
 export function exportToExcel(
-  fileName: string,
-  cellsInput: string[][],
-  colWidthsInput: number[],
-  colNames: string[] = [],
-  rowNames: string[] = [],
-  rowHeightsInput: number[] = []
+    fileName: string,
+    cellsInput: string[][],
+    colWidthsInput: number[],
+    colNames: string[] = [],
+    rowNames: string[] = [],
+    rowHeightsInput: number[] = []
 ) {
   const cells = buildFullGrid(cellsInput, colNames, rowNames);
   const colWidths = [NAME_COL_WIDTH, ...colWidthsInput];
@@ -130,23 +130,23 @@ function sanitizeSqlValue(value: string): string {
 }
 
 export function exportToSQL(
-  fileName: string,
-  cellsInput: string[][],
-  colNames: string[] = [],
-  rowNames: string[] = [],
-  rowLabel: string = 'ردیف',
-  colLabel: string = 'ستون'
+    fileName: string,
+    cellsInput: string[][],
+    colNames: string[] = [],
+    rowNames: string[] = [],
+    rowLabel: string = 'ردیف',
+    colLabel: string = 'ستون'
 ) {
   const tableName = sanitizeSqlIdentifier(fileName, 'my_table');
   const columns = [
-      rowLabel,
+    rowLabel,
     ...colNames.map((c, i) => sanitizeSqlIdentifier(c, `${colLabel}_${i + 1}`)),
   ];
   const quotedColumns = columns.map((c) => `"${c}"`).join(', ');
 
   const createStatement = `CREATE TABLE "${tableName}" (\n${columns
-    .map((c) => `  "${c}" TEXT`)
-    .join(',\n')}\n);`;
+      .map((c) => `  "${c}" TEXT`)
+      .join(',\n')}\n);`;
 
   const insertStatements = cellsInput.map((row, ri) => {
     const values = [rowNames[ri] || '', ...row].map(sanitizeSqlValue).join(', ');
