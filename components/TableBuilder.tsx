@@ -8,6 +8,7 @@ import { loadTables, saveTables, createTableId, StoredTable } from '@/lib/storag
 import EditableText from './EditableText';
 import NewTableDialog from './NewTableDialog';
 import ConfirmDialog from './ConfirmDialog';
+import TableSizeField from './Tablesizefield';
 import { Icon } from '@iconify/react';
 
 const DEFAULT_COL_WIDTH = 130;
@@ -55,6 +56,7 @@ export default function TableBuilder() {
 
     const [tables, setTables] = useState<StoredTable[]>([]);
     const [currentTableId, setCurrentTableId] = useState<string | null>(null);
+    const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
     useEffect(() => {
         setTables(loadTables());
@@ -160,21 +162,189 @@ export default function TableBuilder() {
         setShowNewTableDialog(true);
     }
 
-    function deleteTable() {
-        if (currentTableId) {
-            setTables((prev) => {
-                const updated = prev.filter((tb) => tb.id !== currentTableId);
-                saveTables(updated);
-                return updated;
-            });
+    function deleteTableById(id: string) {
+        setTables((prev) => {
+            const updated = prev.filter((tb) => tb.id !== id);
+            saveTables(updated);
+            return updated;
+        });
+        if (id === currentTableId) {
+            setCurrentTableId(null);
+            setCells([]);
+            setColWidths([]);
+            setRowHeights([]);
+            setColNames([]);
+            setRowNames([]);
+            setInitialized(false);
         }
-        setCurrentTableId(null);
-        setCells([]);
-        setColWidths([]);
-        setRowHeights([]);
-        setColNames([]);
-        setRowNames([]);
-        setInitialized(false);
+    }
+
+    function deleteTable() {
+        if (currentTableId) deleteTableById(currentTableId);
+    }
+
+    // --- تنظیم دستی تعداد ردیف/ستون یک جدول (چه بازِ فعلی باشه چه نباشه) ---
+    function setTableRowCount(id: string, desiredRows: number) {
+        const r = Math.max(1, Math.min(200, Math.round(desiredRows) || 1));
+
+        if (id === currentTableId) {
+            const current = cells.length;
+            if (r === current) return;
+            if (r > current) {
+                const addCount = r - current;
+                setCells((prev) => [
+                    ...prev,
+                    ...Array.from({ length: addCount }, () =>
+                        Array.from({ length: colWidths.length }, () => '')
+                    ),
+                ]);
+                setRowHeights((prev) => [
+                    ...prev,
+                    ...Array.from({ length: addCount }, () => DEFAULT_ROW_HEIGHT),
+                ]);
+                setRowNames((prev) => [
+                    ...prev,
+                    ...Array.from(
+                        { length: addCount },
+                        (_, i) => `${t('table.rowPrefix')} ${current + i + 1}`
+                    ),
+                ]);
+            } else {
+                setCells((prev) => prev.slice(0, r));
+                setRowHeights((prev) => prev.slice(0, r));
+                setRowNames((prev) => prev.slice(0, r));
+            }
+            return;
+        }
+
+        setTables((prev) => {
+            const tb = prev.find((tbl) => tbl.id === id);
+            if (!tb) return prev;
+            const current = tb.rowNames.length;
+            if (r === current) return prev;
+
+            let newCells: string[][];
+            let newRowHeights: number[];
+            let newRowNames: string[];
+
+            if (r > current) {
+                const addCount = r - current;
+                newCells = [
+                    ...tb.cells,
+                    ...Array.from({ length: addCount }, () =>
+                        Array.from({ length: tb.colWidths.length }, () => '')
+                    ),
+                ];
+                newRowHeights = [
+                    ...tb.rowHeights,
+                    ...Array.from({ length: addCount }, () => DEFAULT_ROW_HEIGHT),
+                ];
+                newRowNames = [
+                    ...tb.rowNames,
+                    ...Array.from(
+                        { length: addCount },
+                        (_, i) => `${t('table.rowPrefix')} ${current + i + 1}`
+                    ),
+                ];
+            } else {
+                newCells = tb.cells.slice(0, r);
+                newRowHeights = tb.rowHeights.slice(0, r);
+                newRowNames = tb.rowNames.slice(0, r);
+            }
+
+            const updated = prev.map((tbl) =>
+                tbl.id === id
+                    ? {
+                        ...tbl,
+                        cells: newCells,
+                        rowHeights: newRowHeights,
+                        rowNames: newRowNames,
+                        updatedAt: Date.now(),
+                    }
+                    : tbl
+            );
+            saveTables(updated);
+            return updated;
+        });
+    }
+
+    function setTableColCount(id: string, desiredCols: number) {
+        const c = Math.max(1, Math.min(50, Math.round(desiredCols) || 1));
+
+        if (id === currentTableId) {
+            const current = colWidths.length;
+            if (c === current) return;
+            if (c > current) {
+                const addCount = c - current;
+                setCells((prev) =>
+                    prev.map((row) => [...row, ...Array.from({ length: addCount }, () => '')])
+                );
+                setColWidths((prev) => [
+                    ...prev,
+                    ...Array.from({ length: addCount }, () => DEFAULT_COL_WIDTH),
+                ]);
+                setColNames((prev) => [
+                    ...prev,
+                    ...Array.from(
+                        { length: addCount },
+                        (_, i) => `${t('table.columnPrefix')} ${current + i + 1}`
+                    ),
+                ]);
+            } else {
+                setCells((prev) => prev.map((row) => row.slice(0, c)));
+                setColWidths((prev) => prev.slice(0, c));
+                setColNames((prev) => prev.slice(0, c));
+            }
+            return;
+        }
+
+        setTables((prev) => {
+            const tb = prev.find((tbl) => tbl.id === id);
+            if (!tb) return prev;
+            const current = tb.colWidths.length;
+            if (c === current) return prev;
+
+            let newCells: string[][];
+            let newColWidths: number[];
+            let newColNames: string[];
+
+            if (c > current) {
+                const addCount = c - current;
+                newCells = tb.cells.map((row) => [
+                    ...row,
+                    ...Array.from({ length: addCount }, () => ''),
+                ]);
+                newColWidths = [
+                    ...tb.colWidths,
+                    ...Array.from({ length: addCount }, () => DEFAULT_COL_WIDTH),
+                ];
+                newColNames = [
+                    ...tb.colNames,
+                    ...Array.from(
+                        { length: addCount },
+                        (_, i) => `${t('table.columnPrefix')} ${current + i + 1}`
+                    ),
+                ];
+            } else {
+                newCells = tb.cells.map((row) => row.slice(0, c));
+                newColWidths = tb.colWidths.slice(0, c);
+                newColNames = tb.colNames.slice(0, c);
+            }
+
+            const updated = prev.map((tbl) =>
+                tbl.id === id
+                    ? {
+                        ...tbl,
+                        cells: newCells,
+                        colWidths: newColWidths,
+                        colNames: newColNames,
+                        updatedAt: Date.now(),
+                    }
+                    : tbl
+            );
+            saveTables(updated);
+            return updated;
+        });
     }
 
     const confirmDialogContent = {
@@ -374,8 +544,8 @@ export default function TableBuilder() {
             {/* هدر بالای صفحه */}
             <header className="flex shrink-0 items-center justify-between rounded-lg border border-slate-800 bg-slate-900 px-5 py-3 shadow-lg shadow-black/30">
                 <div className="flex items-center gap-3">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-indigo-600">
-            <img src="/logo.svg" alt={t('header.title')} className="h-full w-full object-cover" />
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-indigo-600">
+            <img src="/Logo.png" alt={t('header.title')} className="h-full w-full object-cover" />
           </span>
                     <div>
                         <h1 className="text-lg font-bold text-slate-100">{t('header.title')}</h1>
@@ -383,11 +553,14 @@ export default function TableBuilder() {
                     </div>
                     <button
                         onClick={toggleLanguage}
-                        className="mr-2 flex items-center gap-1.5 rounded-full border border-slate-700 px-3 py-1.5 text-xs font-medium text-slate-300 hover:bg-slate-800"
+                        className="mr-2 flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-slate-100"
                         title={t('header.switchLanguage')}
                     >
-                        <Icon icon="mdi:web" width="14" height="14" />
-                        {direction === 'rtl' ? 'English' : 'فارسی'}
+                        <Icon
+                            icon={direction === 'rtl' ? 'emojione-monotone:flag-for-united-states' : 'emojione-monotone:flag-for-armenia'}
+                            width={21}
+                            height={21}
+                        />
                     </button>
                 </div>
                 {initialized && (
@@ -502,18 +675,48 @@ export default function TableBuilder() {
                                     .slice()
                                     .sort((a, b) => b.updatedAt - a.updatedAt)
                                     .map((tb) => (
-                                        <button
+                                        <div
                                             key={tb.id}
                                             onClick={() => openTable(tb.id)}
                                             title={tb.name}
-                                            className={`flex items-center gap-2 rounded-lg px-3 py-2 text-start text-sm ${tb.id === currentTableId
+                                            className={`flex cursor-pointer flex-col gap-1.5 rounded-lg px-3 py-2 text-start text-sm ${tb.id === currentTableId
                                                 ? 'bg-indigo-600/20 text-indigo-300'
                                                 : 'text-slate-300 hover:bg-slate-800'
                                             }`}
                                         >
-                                            <Icon icon="mdi:table" width="16" height="16" className="shrink-0" />
-                                            <span className="truncate">{tb.name}</span>
-                                        </button>
+                                            <div className="flex items-center gap-2">
+                                                <Icon icon="boxicons:table-rows-merge" width="18" height="18" className="shrink-0" />
+                                                <span className="flex-1 truncate">{tb.name}</span>
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setDeleteTargetId(tb.id);
+                                                    }}
+                                                    title={t('sidebar.deleteTable')}
+                                                    className="shrink-0 text-slate-600 hover:text-red-400"
+                                                >
+                                                    <Icon icon="ant-design:delete-outlined" width="15" height="15" />
+                                                </button>
+                                            </div>
+                                            <div className="flex items-center gap-1.5 ps-6">
+                                                <TableSizeField
+                                                    icon="material-symbols:add-row-below-outline-rounded"
+                                                    value={tb.rowNames.length}
+                                                    onChange={(n) => setTableRowCount(tb.id, n)}
+                                                    title={t('sidebar.rowsCount')}
+                                                    min={1}
+                                                    max={200}
+                                                />
+                                                <TableSizeField
+                                                    icon="flowbite:add-column-after-outline"
+                                                    value={tb.colWidths.length}
+                                                    onChange={(n) => setTableColCount(tb.id, n)}
+                                                    title={t('sidebar.colsCount')}
+                                                    min={1}
+                                                    max={50}
+                                                />
+                                            </div>
+                                        </div>
                                     ))}
                             </div>
                         </div>
@@ -709,6 +912,20 @@ export default function TableBuilder() {
                     danger={confirmDialogContent[confirmAction].danger}
                     onConfirm={runConfirmedAction}
                     onClose={() => setConfirmAction(null)}
+                />
+            )}
+
+            {deleteTargetId && (
+                <ConfirmDialog
+                    title={t('confirm.deleteFromList.title')}
+                    description={t('confirm.deleteFromList.description')}
+                    confirmLabel={t('confirm.deleteFromList.confirmLabel')}
+                    danger
+                    onConfirm={() => {
+                        deleteTableById(deleteTargetId);
+                        setDeleteTargetId(null);
+                    }}
+                    onClose={() => setDeleteTargetId(null)}
                 />
             )}
         </div>

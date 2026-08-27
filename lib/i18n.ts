@@ -25,6 +25,9 @@ const resources = {
         addColumn: 'افزودن ستون',
         savedTables: 'جدول‌های ذخیره‌شده',
         newTable: 'جدول جدید',
+        deleteTable: 'حذف جدول',
+        rowsCount: 'تعداد ردیف',
+        colsCount: 'تعداد ستون',
         tipResizeCol: 'برای تغییر اندازه ستون لبه‌ی راست هر ستون رو بگیر و drag کن تا اندازه‌ش عوض بشه.',
         tipResizeRow: 'برای تغییر اندازه ردیف پایین هر ردیف رو بگیر و drag کن تا اندازه‌ش عوض بشه.',
         tipMove: 'برای جابجایی ستون و ردیف ایکون ⠿ رو بگیر و بکش تا جابجا بشه.',
@@ -74,6 +77,11 @@ const resources = {
           description: 'با این کار جدول فعلی و تمام داده‌هاش برای همیشه پاک می‌شه و به صفحه‌ی شروع برمی‌گردی. این عمل قابل بازگشت نیست.',
           confirmLabel: 'بله، حذف کن',
         },
+        deleteFromList: {
+          title: 'حذف جدول',
+          description: 'مطمئنی می‌خوای این جدول رو حذف کنی؟ تمام داده‌هاش برای همیشه پاک می‌شه و این عمل قابل بازگشت نیست.',
+          confirmLabel: 'بله، حذف کن',
+        },
       },
       common: {
         cancel: 'انصراف',
@@ -106,6 +114,9 @@ const resources = {
         addColumn: 'Add column',
         savedTables: 'Saved tables',
         newTable: 'New table',
+        deleteTable: 'Delete table',
+        rowsCount: 'Rows',
+        colsCount: 'Columns',
         tipResizeCol: 'To resize a column, grab its right edge and drag it.',
         tipResizeRow: 'To resize a row, grab its bottom edge and drag it.',
         tipMove: 'To move a column or row, grab the ⠿ icon and drag it.',
@@ -153,6 +164,11 @@ const resources = {
         delete: {
           title: 'Delete table',
           description: 'This permanently deletes the current table and all its data, and takes you back to the start screen. This action cannot be undone.',
+          confirmLabel: 'Yes, delete',
+        },
+        deleteFromList: {
+          title: 'Delete table',
+          description: 'Are you sure you want to delete this table? All of its data will be permanently removed and this action cannot be undone.',
           confirmLabel: 'Yes, delete',
         },
       },
