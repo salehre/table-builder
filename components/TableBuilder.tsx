@@ -348,8 +348,7 @@ export default function TableBuilder() {
                             </button>
                             {showExportMenu && (
                                 <div
-                                    className={`absolute top-full z-20 mt-2 w-44 overflow-hidden rounded-[3px] border border-slate-800 bg-slate-900 py-0 shadow-xl shadow-black/40 ${direction === 'rtl' ? 'right-0' : 'left-0'
-                                    }`}
+                                   className={`absolute top-full z-20 mt-2 flex w-44 flex-col gap-1 overflow-hidden rounded-[3px] border border-slate-800 bg-slate-900 py-0 shadow-xl shadow-black/40 ${direction === 'rtl' ? 'right-0' : 'left-0'}`}
                                 >
                                     <button
                                         onClick={() => {
@@ -464,10 +463,10 @@ export default function TableBuilder() {
                 </aside>
 
                 {/* محتوای اصلی */}
-                <main className="flex-1 overflow-auto p-6">
+                <main className="flex-1 overflow-hidden p-6">
                     {initialized && (
                         <div
-                            className="overflow-auto rounded-lg border border-slate-800 bg-slate-900 p-4"
+                            className="h-full overflow-auto rounded-lg border border-slate-800 bg-slate-900 p-4"
                             dir={direction}
                         >
                             <table className="border-separate" style={{borderSpacing: 0}}>
