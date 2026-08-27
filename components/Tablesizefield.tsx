@@ -10,6 +10,7 @@ interface TableSizeFieldProps {
     title?: string;
     min?: number;
     max?: number;
+    size?: 'sm' | 'md';
 }
 
 export default function TableSizeField({
@@ -19,7 +20,9 @@ export default function TableSizeField({
                                            title,
                                            min = 1,
                                            max = 200,
+                                           size = 'sm',
                                        }: TableSizeFieldProps) {
+    const isMd = size === 'md';
     const [editing, setEditing] = useState(false);
     const [draft, setDraft] = useState(String(value));
     const inputRef = useRef<HTMLInputElement>(null);
@@ -53,9 +56,16 @@ export default function TableSizeField({
     return (
         <div
             onClick={(e) => e.stopPropagation()}
-            className="flex items-center gap-1 rounded-md bg-slate-900/70 px-1.5 py-0.5 text-[11px] text-slate-400"
+            className={`flex items-center rounded-md bg-slate-900/70 text-slate-400 ${
+                isMd ? 'gap-1.5 px-2.5 py-1.5 text-sm' : 'gap-1 px-1.5 py-0.5 text-[11px]'
+            }`}
         >
-            <Icon icon={icon} width="12" height="12" className="shrink-0 text-slate-500" />
+            <Icon
+                icon={icon}
+                width={isMd ? '18' : '12'}
+                height={isMd ? '18' : '12'}
+                className="shrink-0 text-slate-500"
+            />
             {editing ? (
                 <input
                     ref={inputRef}
@@ -70,7 +80,9 @@ export default function TableSizeField({
                         if (e.key === 'Enter') commit();
                         if (e.key === 'Escape') cancel();
                     }}
-                    className="w-10 rounded border border-indigo-500 bg-slate-950 px-1 py-0 text-[11px] text-slate-100 outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                    className={`rounded border border-indigo-500 bg-slate-950 text-slate-100 outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none ${
+                        isMd ? 'w-14 px-1.5 py-0.5 text-sm' : 'w-10 px-1 py-0 text-[11px]'
+                    }`}
                 />
             ) : (
                 <button

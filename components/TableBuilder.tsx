@@ -63,8 +63,14 @@ export default function TableBuilder() {
         setTables(loadTables());
     }, []);
 
+    const skipNextSaveRef = useRef(false);
+
     useEffect(() => {
         if (!initialized || !currentTableId) return;
+        if (skipNextSaveRef.current) {
+            skipNextSaveRef.current = false;
+            return;
+        }
         setTables((prev) => {
             if (!prev.some((tb) => tb.id === currentTableId)) return prev;
             const updated = prev.map((tb) =>
@@ -150,6 +156,7 @@ export default function TableBuilder() {
     function openTable(id: string) {
         const tb = tables.find((t) => t.id === id);
         if (!tb) return;
+        skipNextSaveRef.current = true;
         setCurrentTableId(id);
         setCells(tb.cells);
         setColWidths(tb.colWidths);
@@ -361,7 +368,7 @@ export default function TableBuilder() {
             action: async () => {
                 try {
                     await exportToWord(fileName, cells, colWidths, colNames, rowNames, rowHeights);
-                    toast.success(t('toast.exportSuccess', { format: t('export.word') }));
+                    toast.success(t('toast.exportSuccess', { format: t('export.wordName') }));
                 } catch {
                     toast.error(t('toast.exportError'));
                 }
@@ -375,7 +382,7 @@ export default function TableBuilder() {
             action: async () => {
                 try {
                     await exportToExcel(fileName, cells, colWidths, colNames, rowNames, rowHeights);
-                    toast.success(t('toast.exportSuccess', { format: t('export.excel') }));
+                    toast.success(t('toast.exportSuccess', { format: t('export.excelName') }));
                 } catch {
                     toast.error(t('toast.exportError'));
                 }
@@ -389,7 +396,7 @@ export default function TableBuilder() {
             action: async () => {
                 try {
                     await exportToSQL(fileName, cells, colNames, rowNames, t('table.rowPrefix'), t('table.columnPrefix'));
-                    toast.success(t('toast.exportSuccess', { format: t('export.sql') }));
+                    toast.success(t('toast.exportSuccess', { format: t('export.sqlName') }));
                 } catch {
                     toast.error(t('toast.exportError'));
                 }
@@ -605,7 +612,7 @@ export default function TableBuilder() {
                             </button>
                             {showExportMenu && (
                                 <div
-                                    className={`absolute top-full z-20 mt-2 flex w-44 flex-col gap-1 overflow-hidden rounded-lg border border-slate-800 bg-slate-900 py-1.5 shadow-xl shadow-black/40 ${direction === 'rtl' ? 'right-0' : 'left-0'
+                                    className={`absolute top-full z-20 mt-2 flex w-44 flex-col gap-1 overflow-hidden rounded-lg border border-slate-800 bg-slate-900  shadow-xl shadow-black/40 ${direction === 'rtl' ? 'right-0' : 'left-0'
                                     }`}
                                 >
                                     <button
@@ -613,7 +620,7 @@ export default function TableBuilder() {
                                             setConfirmAction('word');
                                             setShowExportMenu(false);
                                         }}
-                                        className="flex w-full items-center gap-2 px-3 py-2 text-right text-xs font-medium text-slate-200 hover:bg-slate-800"
+                                        className="flex w-full items-center gap-2 px-3 py-2 text-right text-xs font-medium text-slate-200 hover:bg-[#2461CA]"
                                     >
                                         <span className="h-2 w-2 rounded-full bg-[#2461CA]" />
                                         {t('export.word')}
@@ -623,7 +630,7 @@ export default function TableBuilder() {
                                             setConfirmAction('excel');
                                             setShowExportMenu(false);
                                         }}
-                                        className="flex w-full items-center gap-2 px-3 py-2 text-right text-xs font-medium text-slate-200 hover:bg-slate-800"
+                                        className="flex w-full items-center gap-2 px-3 py-2 text-right text-xs font-medium text-slate-200 hover:bg-[#0F7937]"
                                     >
                                         <span className="h-2 w-2 rounded-full bg-[#0F7937]" />
                                         {t('export.excel')}
@@ -633,7 +640,7 @@ export default function TableBuilder() {
                                             setConfirmAction('sql');
                                             setShowExportMenu(false);
                                         }}
-                                        className="flex w-full items-center gap-2 px-3 py-2 text-right text-xs font-medium text-slate-200 hover:bg-slate-800"
+                                        className="flex w-full items-center gap-2 px-3 py-2 text-right text-xs font-medium text-slate-200 hover:bg-[#d6771d]"
                                         title={t('export.sqlTitle')}
                                     >
                                         <span className="h-2 w-2 rounded-full bg-[#d6771d]" />
@@ -644,7 +651,7 @@ export default function TableBuilder() {
                         </div>
                         <button
                             onClick={() => setConfirmAction('delete')}
-                            className="rounded-lg border border-red-800 px-4 py-2 text-xs font-medium text-red-400 hover:bg-red-950"
+                            className="flex items-center gap-1.5 rounded-lg bg-red-600 px-4 py-2 text-xs font-medium text-white hover:bg-red-500"
                         >
                             {t('export.deleteTable')}
                         </button>
@@ -671,7 +678,7 @@ export default function TableBuilder() {
                     )}
 
                     {initialized && currentTableId && (
-                        <div className="flex items-center gap-1.5">
+                        <div className="flex items-center gap-2">
                             <TableSizeField
                                 icon="material-symbols:add-row-below-outline-rounded"
                                 value={cells.length}
@@ -679,6 +686,7 @@ export default function TableBuilder() {
                                 title={t('sidebar.rowsCount')}
                                 min={1}
                                 max={200}
+                                size="md"
                             />
                             <TableSizeField
                                 icon="flowbite:add-column-after-outline"
@@ -687,6 +695,7 @@ export default function TableBuilder() {
                                 title={t('sidebar.colsCount')}
                                 min={1}
                                 max={50}
+                                size="md"
                             />
                         </div>
                     )}
@@ -739,31 +748,11 @@ export default function TableBuilder() {
                                                         setDeleteTargetId(tb.id);
                                                     }}
                                                     title={t('sidebar.deleteTable')}
-                                                    className="shrink-0 text-slate-600 hover:text-red-400"
+                                                    className="shrink-0 text-slate-600 hover:text-red-500"
                                                 >
-                                                    <Icon icon="ant-design:delete-outlined" width="15" height="15" />
+                                                    <Icon icon="ep:delete" width="15" height="18" />
                                                 </button>
                                             </div>
-                                            {tb.id !== currentTableId && (
-                                                <div className="flex items-center gap-1.5 ps-6">
-                                                    <TableSizeField
-                                                        icon="material-symbols:add-row-below-outline-rounded"
-                                                        value={tb.rowNames.length}
-                                                        onChange={(n) => setTableRowCount(tb.id, n)}
-                                                        title={t('sidebar.rowsCount')}
-                                                        min={1}
-                                                        max={200}
-                                                    />
-                                                    <TableSizeField
-                                                        icon="flowbite:add-column-after-outline"
-                                                        value={tb.colWidths.length}
-                                                        onChange={(n) => setTableColCount(tb.id, n)}
-                                                        title={t('sidebar.colsCount')}
-                                                        min={1}
-                                                        max={50}
-                                                    />
-                                                </div>
-                                            )}
                                         </div>
                                     ))}
                             </div>
@@ -793,9 +782,9 @@ export default function TableBuilder() {
                             onClick={openNewTableDialog}
                             className="flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-3 py-2.5 text-sm font-medium text-white hover:bg-indigo-500"
                         >
-                            <Icon icon="mdi:plus" width="16" height="16" />
                             {t('sidebar.newTable')}
                         </button>
+                        <a className="text-sm text-center tracking-wide pt-2" target="_blank" href="https://resume-roadmap.vercel.app/">Powered By <span  className="text-indigo-500"> Saleh Rezaei</span></a>
                     </div>
                 </aside>
 

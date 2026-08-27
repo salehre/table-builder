@@ -133,7 +133,7 @@ export default function NewTableDialog({
 
                 <div className="mb-6">
                     <label className="mb-1 block text-sm font-medium text-slate-300">
-                        {t('newTable.fileNameLabel')} <span className="text-red-500">*</span>
+                        {t('newTable.fileNameLabel')}
                     </label>
                     <input
                         type="text"
