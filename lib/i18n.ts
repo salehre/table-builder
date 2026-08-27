@@ -5,7 +5,7 @@ const resources = {
   fa: {
     translation: {
       header: {
-        brand: 'جد',
+        support: 'حمایت',
         title: 'سازنده جدول',
         subtitle: 'مدیریت و اکسپورت جدول',
         switchLanguage: 'تغییر زبان',
@@ -103,6 +103,7 @@ const resources = {
   en: {
     translation: {
       header: {
+        support: 'Support',
         title: 'Table Builder',
         subtitle: 'Manage and export your table',
         switchLanguage: 'Switch language',

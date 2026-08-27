@@ -595,8 +595,19 @@ export default function TableBuilder() {
                         />
                     </button>
                 </div>
-                {initialized && (
-                    <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2">
+                    <a
+                        href="https://www.coffeete.ir/salehrezaei"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 rounded-md bg-[#efe2d1] px-3.5 py-1.5 text-sm font-semibold text-[#1c1b1b] transition hover:-translate-y-px hover:bg-[#f3e8da]"
+                        aria-label={t('header.support')}
+                    >
+                        <Icon icon="fa7-solid:coffee" className="pb-0.5" color="#F26C50" width="20" height="20" />
+                        {t('header.support')}
+                    </a>
+                    {initialized && (
+                        <>
                         <div className="relative" ref={exportMenuRef}>
                             <button
                                 onClick={() => setShowExportMenu((v) => !v)}
@@ -655,8 +666,9 @@ export default function TableBuilder() {
                         >
                             {t('export.deleteTable')}
                         </button>
-                    </div>
-                )}
+                        </>
+                    )}
+                </div>
             </header>
 
             <div className="flex flex-1 gap-4 overflow-hidden">
