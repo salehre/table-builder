@@ -321,11 +321,14 @@ export default function TableBuilder() {
                     </div>
                     <button
                         onClick={toggleLanguage}
-                        className="mr-2 flex items-center gap-1.5 rounded-full border border-slate-700 px-3 py-1.5 text-xs font-medium text-slate-300 hover:bg-slate-800"
+                        className="mr-2 flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium text-slate-300 hover:text-slate-100"
                         title={t('header.switchLanguage')}
                     >
-                        <Icon icon="mdi:web" width="14" height="14"/>
-                        {direction === 'rtl' ? 'English' : 'فارسی'}
+                        <Icon
+                            icon={direction === 'rtl' ? 'emojione-monotone:flag-for-united-states' : 'emojione-monotone:flag-for-armenia'}
+                            width={21}
+                            height={21}
+                        />
                     </button>
                 </div>
                 {initialized && (
@@ -333,7 +336,7 @@ export default function TableBuilder() {
                         <div className="relative" ref={exportMenuRef}>
                             <button
                                 onClick={() => setShowExportMenu((v) => !v)}
-                                className="flex items-center gap-1.5 rounded-lg bg-indigo-600 px-4 py-2 text-xs font-medium text-white hover:bg-indigo-500"
+                                className="flex items-center gap-1.5 rounded-[3px] bg-indigo-600 px-4 py-2 text-xs font-medium text-white hover:bg-indigo-500"
                             >
                                 {t('export.button')}
                                 <Icon
@@ -345,7 +348,7 @@ export default function TableBuilder() {
                             </button>
                             {showExportMenu && (
                                 <div
-                                    className={`absolute top-full z-20 mt-2 w-44 overflow-hidden rounded-lg border border-slate-800 bg-slate-900 py-1 shadow-xl shadow-black/40 ${direction === 'rtl' ? 'right-0' : 'left-0'
+                                    className={`absolute top-full z-20 mt-2 w-44 overflow-hidden rounded-[3px] border border-slate-800 bg-slate-900 py-0 shadow-xl shadow-black/40 ${direction === 'rtl' ? 'right-0' : 'left-0'
                                     }`}
                                 >
                                     <button
@@ -384,7 +387,7 @@ export default function TableBuilder() {
                         </div>
                         <button
                             onClick={() => setConfirmAction('delete')}
-                            className="rounded-lg border border-red-800 px-4 py-2 text-xs font-medium text-red-400 hover:bg-red-950"
+                            className="flex items-center gap-1.5 rounded-[3px] bg-red-600 px-4 py-2 text-xs font-medium text-white hover:bg-red-500"
                         >
                             {t('export.deleteTable')}
                         </button>
