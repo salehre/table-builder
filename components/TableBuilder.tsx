@@ -1,13 +1,14 @@
 'use client';
 
-import {useEffect, useRef, useState} from 'react';
-import {useTranslation} from 'react-i18next';
+import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import '@/lib/i18n';
-import {exportToWord, exportToExcel, exportToSQL} from '@/lib/export';
+import { exportToWord, exportToExcel, exportToSQL } from '@/lib/export';
+import { loadTables, saveTables, createTableId, StoredTable } from '@/lib/storage';
 import EditableText from './EditableText';
 import NewTableDialog from './NewTableDialog';
 import ConfirmDialog from './ConfirmDialog';
-import {Icon} from '@iconify/react';
+import { Icon } from '@iconify/react';
 
 const DEFAULT_COL_WIDTH = 130;
 const DEFAULT_ROW_HEIGHT = 40;
@@ -22,7 +23,7 @@ function reorder<T>(arr: T[], from: number, to: number): T[] {
 }
 
 export default function TableBuilder() {
-    const {t, i18n} = useTranslation();
+    const { t, i18n } = useTranslation();
     const direction = i18n.language === 'fa' ? 'rtl' : 'ltr';
 
     function toggleLanguage() {
@@ -52,6 +53,27 @@ export default function TableBuilder() {
     const [colNames, setColNames] = useState<string[]>([]);
     const [rowNames, setRowNames] = useState<string[]>([]);
 
+    const [tables, setTables] = useState<StoredTable[]>([]);
+    const [currentTableId, setCurrentTableId] = useState<string | null>(null);
+
+    useEffect(() => {
+        setTables(loadTables());
+    }, []);
+
+    useEffect(() => {
+        if (!initialized || !currentTableId) return;
+        setTables((prev) => {
+            if (!prev.some((tb) => tb.id === currentTableId)) return prev;
+            const updated = prev.map((tb) =>
+                tb.id === currentTableId
+                    ? { ...tb, name: fileName, cells, colWidths, rowHeights, colNames, rowNames, updatedAt: Date.now() }
+                    : tb
+            );
+            saveTables(updated);
+            return updated;
+        });
+    }, [cells, colWidths, rowHeights, colNames, rowNames, fileName, initialized, currentTableId]);
+
     const dragColIndex = useRef<number | null>(null);
     const dragRowIndex = useRef<number | null>(null);
     const [dragOverCol, setDragOverCol] = useState<number | null>(null);
@@ -66,13 +88,11 @@ export default function TableBuilder() {
 
     useEffect(() => {
         if (!showExportMenu) return;
-
         function handleOutsideClick(e: MouseEvent) {
             if (exportMenuRef.current && !exportMenuRef.current.contains(e.target as Node)) {
                 setShowExportMenu(false);
             }
         }
-
         window.addEventListener('mousedown', handleOutsideClick);
         return () => window.removeEventListener('mousedown', handleOutsideClick);
     }, [showExportMenu]);
@@ -81,17 +101,56 @@ export default function TableBuilder() {
         if (!newTableFileName.trim()) return;
         const r = Math.max(1, Math.min(200, Number(rowsInput) || 0));
         const c = Math.max(1, Math.min(50, Number(colsInput) || 0));
-        const newCells: string[][] = Array.from({length: r}, () =>
-            Array.from({length: c}, () => '')
+        const newCells: string[][] = Array.from({ length: r }, () =>
+            Array.from({ length: c }, () => '')
         );
+        const newColWidths = Array.from({ length: c }, () => DEFAULT_COL_WIDTH);
+        const newRowHeights = Array.from({ length: r }, () => DEFAULT_ROW_HEIGHT);
+        const newColNames = Array.from({ length: c }, (_, i) => `${t('table.columnPrefix')} ${i + 1}`);
+        const newRowNames = Array.from({ length: r }, (_, i) => `${t('table.rowPrefix')} ${i + 1}`);
+        const name = newTableFileName.trim();
+        const id = createTableId();
+
+        setTables((prev) => {
+            const updated = [
+                ...prev,
+                {
+                    id,
+                    name,
+                    cells: newCells,
+                    colWidths: newColWidths,
+                    rowHeights: newRowHeights,
+                    colNames: newColNames,
+                    rowNames: newRowNames,
+                    updatedAt: Date.now(),
+                },
+            ];
+            saveTables(updated);
+            return updated;
+        });
+
         setCells(newCells);
-        setColWidths(Array.from({length: c}, () => DEFAULT_COL_WIDTH));
-        setRowHeights(Array.from({length: r}, () => DEFAULT_ROW_HEIGHT));
-        setColNames(Array.from({length: c}, (_, i) => `${t('table.columnPrefix')} ${i + 1}`));
-        setRowNames(Array.from({length: r}, (_, i) => `${t('table.rowPrefix')} ${i + 1}`));
-        setFileName(newTableFileName.trim());
+        setColWidths(newColWidths);
+        setRowHeights(newRowHeights);
+        setColNames(newColNames);
+        setRowNames(newRowNames);
+        setFileName(name);
+        setCurrentTableId(id);
         setInitialized(true);
         setShowNewTableDialog(false);
+    }
+
+    function openTable(id: string) {
+        const tb = tables.find((t) => t.id === id);
+        if (!tb) return;
+        setCurrentTableId(id);
+        setCells(tb.cells);
+        setColWidths(tb.colWidths);
+        setRowHeights(tb.rowHeights);
+        setColNames(tb.colNames);
+        setRowNames(tb.rowNames);
+        setFileName(tb.name);
+        setInitialized(true);
     }
 
     function openNewTableDialog() {
@@ -102,6 +161,14 @@ export default function TableBuilder() {
     }
 
     function deleteTable() {
+        if (currentTableId) {
+            setTables((prev) => {
+                const updated = prev.filter((tb) => tb.id !== currentTableId);
+                saveTables(updated);
+                return updated;
+            });
+        }
+        setCurrentTableId(null);
         setCells([]);
         setColWidths([]);
         setRowHeights([]);
@@ -180,7 +247,7 @@ export default function TableBuilder() {
     }
 
     function addRow() {
-        setCells((prev) => [...prev, Array.from({length: colWidths.length}, () => '')]);
+        setCells((prev) => [...prev, Array.from({ length: colWidths.length }, () => '')]);
         setRowHeights((prev) => [...prev, DEFAULT_ROW_HEIGHT]);
         setRowNames((prev) => [...prev, `${t('table.rowPrefix')} ${prev.length + 1}`]);
     }
@@ -259,12 +326,10 @@ export default function TableBuilder() {
     function handleColDragStart(index: number) {
         dragColIndex.current = index;
     }
-
     function handleColDragOver(e: React.DragEvent, index: number) {
         e.preventDefault();
         setDragOverCol(index);
     }
-
     function handleColDrop(index: number) {
         const from = dragColIndex.current;
         if (from === null || from === index) {
@@ -283,12 +348,10 @@ export default function TableBuilder() {
     function handleRowDragStart(index: number) {
         dragRowIndex.current = index;
     }
-
     function handleRowDragOver(e: React.DragEvent, index: number) {
         e.preventDefault();
         setDragOverRow(index);
     }
-
     function handleRowDrop(index: number) {
         const from = dragRowIndex.current;
         if (from === null || from === index) {
@@ -309,12 +372,10 @@ export default function TableBuilder() {
             dir={direction}
         >
             {/* هدر بالای صفحه */}
-            <header
-                className="flex shrink-0 items-center justify-between rounded-lg border border-slate-800 bg-slate-900 px-5 py-3 shadow-lg shadow-black/30">
+            <header className="flex shrink-0 items-center justify-between rounded-lg border border-slate-800 bg-slate-900 px-5 py-3 shadow-lg shadow-black/30">
                 <div className="flex items-center gap-3">
-          <span
-              className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-[99px] bg-indigo-600">
-            <img src="/Logo.png" alt={t('header.title')} className="h-full w-full object-cover"/>
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-indigo-600">
+            <img src="/logo.svg" alt={t('header.title')} className="h-full w-full object-cover" />
           </span>
                     <div>
                         <h1 className="text-lg font-bold text-slate-100">{t('header.title')}</h1>
@@ -322,14 +383,11 @@ export default function TableBuilder() {
                     </div>
                     <button
                         onClick={toggleLanguage}
-                        className="mr-2 flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium text-slate-300 hover:text-slate-100"
+                        className="mr-2 flex items-center gap-1.5 rounded-full border border-slate-700 px-3 py-1.5 text-xs font-medium text-slate-300 hover:bg-slate-800"
                         title={t('header.switchLanguage')}
                     >
-                        <Icon
-                            icon={direction === 'rtl' ? 'emojione-monotone:flag-for-united-states' : 'emojione-monotone:flag-for-armenia'}
-                            width={21}
-                            height={21}
-                        />
+                        <Icon icon="mdi:web" width="14" height="14" />
+                        {direction === 'rtl' ? 'English' : 'فارسی'}
                     </button>
                 </div>
                 {initialized && (
@@ -337,7 +395,7 @@ export default function TableBuilder() {
                         <div className="relative" ref={exportMenuRef}>
                             <button
                                 onClick={() => setShowExportMenu((v) => !v)}
-                                className="flex items-center gap-1.5 rounded-[3px] bg-indigo-600 px-4 py-2 text-xs font-medium text-white hover:bg-indigo-500"
+                                className="flex items-center gap-1.5 rounded-lg bg-indigo-600 px-4 py-2 text-xs font-medium text-white hover:bg-indigo-500"
                             >
                                 {t('export.button')}
                                 <Icon
@@ -349,7 +407,8 @@ export default function TableBuilder() {
                             </button>
                             {showExportMenu && (
                                 <div
-                                   className={`absolute top-full z-20 mt-2 flex w-44 flex-col gap-1 overflow-hidden rounded-[3px] border border-slate-800 bg-slate-900 py-0 shadow-xl shadow-black/40 ${direction === 'rtl' ? 'right-0' : 'left-0'}`}
+                                    className={`absolute top-full z-20 mt-2 flex w-44 flex-col gap-1 overflow-hidden rounded-lg border border-slate-800 bg-slate-900 py-1.5 shadow-xl shadow-black/40 ${direction === 'rtl' ? 'right-0' : 'left-0'
+                                    }`}
                                 >
                                     <button
                                         onClick={() => {
@@ -358,7 +417,7 @@ export default function TableBuilder() {
                                         }}
                                         className="flex w-full items-center gap-2 px-3 py-2 text-right text-xs font-medium text-slate-200 hover:bg-slate-800"
                                     >
-                                        <span className="h-2 w-2 rounded-full bg-[#2461CA]"/>
+                                        <span className="h-2 w-2 rounded-full bg-[#2461CA]" />
                                         {t('export.word')}
                                     </button>
                                     <button
@@ -368,7 +427,7 @@ export default function TableBuilder() {
                                         }}
                                         className="flex w-full items-center gap-2 px-3 py-2 text-right text-xs font-medium text-slate-200 hover:bg-slate-800"
                                     >
-                                        <span className="h-2 w-2 rounded-full bg-[#0F7937]"/>
+                                        <span className="h-2 w-2 rounded-full bg-[#0F7937]" />
                                         {t('export.excel')}
                                     </button>
                                     <button
@@ -379,7 +438,7 @@ export default function TableBuilder() {
                                         className="flex w-full items-center gap-2 px-3 py-2 text-right text-xs font-medium text-slate-200 hover:bg-slate-800"
                                         title={t('export.sqlTitle')}
                                     >
-                                        <span className="h-2 w-2 rounded-full bg-[#d6771d]"/>
+                                        <span className="h-2 w-2 rounded-full bg-[#d6771d]" />
                                         {t('export.sql')}
                                     </button>
                                 </div>
@@ -387,7 +446,7 @@ export default function TableBuilder() {
                         </div>
                         <button
                             onClick={() => setConfirmAction('delete')}
-                            className="flex items-center gap-1.5 rounded-[3px] bg-red-600 px-4 py-2 text-xs font-medium text-white hover:bg-red-500"
+                            className="rounded-lg border border-red-800 px-4 py-2 text-xs font-medium text-red-400 hover:bg-red-950"
                         >
                             {t('export.deleteTable')}
                         </button>
@@ -397,8 +456,7 @@ export default function TableBuilder() {
 
             <div className="flex flex-1 gap-4 overflow-hidden">
                 {/* سایدبار */}
-                <aside
-                    className="flex h-full w-72 shrink-0 flex-col gap-5 overflow-hidden rounded-lg border border-slate-800 bg-slate-900 p-5 shadow-lg shadow-black/30">
+                <aside className="flex h-full w-72 shrink-0 flex-col gap-5 overflow-hidden rounded-lg border border-slate-800 bg-slate-900 p-5 shadow-lg shadow-black/30">
 
                     {initialized && (
                         <div>
@@ -422,7 +480,7 @@ export default function TableBuilder() {
                                 className="flex items-center gap-2 rounded-lg bg-slate-800 px-3 py-2.5 text-sm font-medium text-slate-200 hover:bg-slate-700"
                             >
                 <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-600/20 text-indigo-400">
-                  <Icon icon="material-symbols:add-row-below-outline-rounded" width="24" height="24"/></span>
+                  <Icon icon="material-symbols:add-row-below-outline-rounded" width="24" height="24" /></span>
                                 {t('sidebar.addRow')}
                             </button>
                             <button
@@ -430,36 +488,63 @@ export default function TableBuilder() {
                                 className="flex items-center gap-2 rounded-lg bg-slate-800 px-3 py-2.5 text-sm font-medium text-slate-200 hover:bg-slate-700"
                             >
                 <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-600/20 text-indigo-400">
-                  <Icon icon="flowbite:add-column-after-outline" width="24" height="24"/></span>
+                  <Icon icon="flowbite:add-column-after-outline" width="24" height="24" /></span>
                                 {t('sidebar.addColumn')}
                             </button>
                         </div>
                     )}
 
+                    {tables.length > 0 && (
+                        <div className="flex min-h-0 flex-1 flex-col gap-2">
+                            <span className="text-xs font-medium text-slate-400">{t('sidebar.savedTables')}</span>
+                            <div className="flex flex-col gap-1 overflow-y-auto">
+                                {tables
+                                    .slice()
+                                    .sort((a, b) => b.updatedAt - a.updatedAt)
+                                    .map((tb) => (
+                                        <button
+                                            key={tb.id}
+                                            onClick={() => openTable(tb.id)}
+                                            title={tb.name}
+                                            className={`flex items-center gap-2 rounded-lg px-3 py-2 text-start text-sm ${tb.id === currentTableId
+                                                ? 'bg-indigo-600/20 text-indigo-300'
+                                                : 'text-slate-300 hover:bg-slate-800'
+                                            }`}
+                                        >
+                                            <Icon icon="mdi:table" width="16" height="16" className="shrink-0" />
+                                            <span className="truncate">{tb.name}</span>
+                                        </button>
+                                    ))}
+                            </div>
+                        </div>
+                    )}
+
                     <div className="mt-auto flex flex-col gap-3">
-                        <div
-                            className="flex flex-col gap-2 rounded-lg border border-slate-800 bg-slate-800/50 p-3 text-[11px] leading-5 text-slate-400">
+                        <div className="flex flex-col gap-2 rounded-lg border border-slate-800 bg-slate-800/50 p-3 text-[11px] leading-5 text-slate-400">
                             <div className="flex items-start gap-1.5">
-                                <Icon icon="carbon:dot-mark" width="14" height="14"
-                                      className="mt-0.5 shrink-0 text-indigo-400"/>
+                                <Icon icon="carbon:dot-mark" width="14" height="14" className="mt-0.5 shrink-0 text-indigo-400" />
                                 <span>{t('sidebar.tipResizeCol')}</span>
                             </div>
                             <div className="flex items-start gap-1.5">
-                                <Icon icon="carbon:dot-mark" width="14" height="14"
-                                      className="mt-0.5 shrink-0 text-indigo-400"/>
+                                <Icon icon="carbon:dot-mark" width="14" height="14" className="mt-0.5 shrink-0 text-indigo-400" />
                                 <span>{t('sidebar.tipResizeRow')}</span>
                             </div>
                             <div className="flex items-start gap-1.5">
-                                <Icon icon="carbon:dot-mark" width="14" height="14"
-                                      className="mt-0.5 shrink-0 text-indigo-400"/>
+                                <Icon icon="carbon:dot-mark" width="14" height="14" className="mt-0.5 shrink-0 text-indigo-400" />
                                 <span>{t('sidebar.tipMove')}</span>
                             </div>
                             <div className="flex items-start gap-1.5">
-                                <Icon icon="carbon:dot-mark" width="14" height="14"
-                                      className="mt-0.5 shrink-0 text-indigo-400"/>
+                                <Icon icon="carbon:dot-mark" width="14" height="14" className="mt-0.5 shrink-0 text-indigo-400" />
                                 <span>{t('sidebar.tipRename')}</span>
                             </div>
                         </div>
+                        <button
+                            onClick={openNewTableDialog}
+                            className="flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-3 py-2.5 text-sm font-medium text-white hover:bg-indigo-500"
+                        >
+                            <Icon icon="mdi:plus" width="16" height="16" />
+                            {t('sidebar.newTable')}
+                        </button>
                     </div>
                 </aside>
 
@@ -470,16 +555,16 @@ export default function TableBuilder() {
                             className="h-full overflow-auto rounded-lg border border-slate-800 bg-slate-900 p-4"
                             dir={direction}
                         >
-                            <table className="border-separate" style={{borderSpacing: 0}}>
+                            <table className="border-separate" style={{ borderSpacing: 0 }}>
                                 <colgroup>
-                                    <col style={{width: 130}}/>
+                                    <col style={{ width: 130 }} />
                                     {colWidths.map((w, i) => (
-                                        <col key={i} style={{width: w}}/>
+                                        <col key={i} style={{ width: w }} />
                                     ))}
                                 </colgroup>
                                 <thead>
                                 <tr>
-                                    <th className="border border-slate-700 bg-slate-800"/>
+                                    <th className="border border-slate-700 bg-slate-800" />
                                     {colWidths.map((w, ci) => (
                                         <th
                                             key={ci}
@@ -495,7 +580,7 @@ export default function TableBuilder() {
                               className="cursor-grab select-none text-slate-500 active:cursor-grabbing"
                               title={t('table.moveColumn')}
                           >
-                            <Icon icon="charm:grab-vertical" width="14" height="14"/>
+                            <Icon icon="charm:grab-vertical" width="14" height="14" />
                           </span>
                                                 <EditableText
                                                     value={colNames[ci] ?? ''}
@@ -510,7 +595,7 @@ export default function TableBuilder() {
                                                     className="text-slate-600 hover:text-red-400"
                                                     title={t('table.removeColumn')}
                                                 >
-                                                    <Icon icon="ant-design:close-outlined" width="14" height="14"/>
+                                                    <Icon icon="ant-design:close-outlined" width="14" height="14" />
                                                 </button>
                                             </div>
                                             <div
@@ -529,7 +614,7 @@ export default function TableBuilder() {
                                             onDrop={() => handleRowDrop(ri)}
                                             className={`relative border border-slate-700 bg-slate-800 p-0 text-xs text-slate-300 ${dragOverRow === ri ? 'bg-indigo-900/50' : ''
                                             }`}
-                                            style={{height: rowHeights[ri]}}
+                                            style={{ height: rowHeights[ri] }}
                                         >
                                             <div className="flex h-full items-center gap-1 px-1.5">
                           <span
@@ -538,7 +623,7 @@ export default function TableBuilder() {
                               className="cursor-grab select-none text-slate-500 active:cursor-grabbing"
                               title={t('table.moveRow')}
                           >
-                            <Icon icon="charm:grab-horizontal" width="14" height="14"/>
+                            <Icon icon="charm:grab-horizontal" width="14" height="14" />
                           </span>
                                                 <EditableText
                                                     value={rowNames[ri] ?? ''}
@@ -552,7 +637,7 @@ export default function TableBuilder() {
                                                     className="text-slate-600 hover:text-red-400"
                                                     title={t('table.removeRow')}
                                                 >
-                                                    <Icon icon="ant-design:close-outlined" width="14" height="14"/>
+                                                    <Icon icon="ant-design:close-outlined" width="14" height="14" />
                                                 </button>
                                             </div>
                                             <div
@@ -564,7 +649,7 @@ export default function TableBuilder() {
                                             <td
                                                 key={ci}
                                                 className="border border-slate-700 p-0"
-                                                style={{height: rowHeights[ri]}}
+                                                style={{ height: rowHeights[ri] }}
                                             >
                                                 <div className="flex h-full items-center justify-center px-2">
                                                     <EditableText
@@ -586,8 +671,7 @@ export default function TableBuilder() {
                     )}
                     {!initialized && (
                         <div className="flex h-full items-center justify-center">
-                            <div
-                                className="flex flex-col items-center gap-4 rounded-lg border border-slate-800 bg-slate-900 px-10 py-8 text-center shadow-lg">
+                            <div className="flex flex-col items-center gap-4 rounded-lg border border-slate-800 bg-slate-900 px-10 py-8 text-center shadow-lg">
                                 <p className="text-sm leading-6 text-slate-400">
                                     {t('emptyState.message')}
                                 </p>
