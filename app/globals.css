@@ -4,139 +4,155 @@
 
 /* Vazirmatn FD (فارسی) */
 @font-face {
-  font-family: 'Vazirmatn FD';
-  src: url('/fonts/fa/Vazirmatn-FD-Thin.woff2') format('woff2');
-  font-weight: 100;
-  font-style: normal;
-  font-display: swap;
+    font-family: 'Vazirmatn FD';
+    src: url('/fonts/fa/Vazirmatn-FD-Thin.woff2') format('woff2');
+    font-weight: 100;
+    font-style: normal;
+    font-display: swap;
 }
+
 @font-face {
-  font-family: 'Vazirmatn FD';
-  src: url('/fonts/fa/Vazirmatn-FD-ExtraLight.woff2') format('woff2');
-  font-weight: 200;
-  font-style: normal;
-  font-display: swap;
+    font-family: 'Vazirmatn FD';
+    src: url('/fonts/fa/Vazirmatn-FD-ExtraLight.woff2') format('woff2');
+    font-weight: 200;
+    font-style: normal;
+    font-display: swap;
 }
+
 @font-face {
-  font-family: 'Vazirmatn FD';
-  src: url('/fonts/fa/Vazirmatn-FD-Regular.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
+    font-family: 'Vazirmatn FD';
+    src: url('/fonts/fa/Vazirmatn-FD-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
 }
+
 @font-face {
-  font-family: 'Vazirmatn FD';
-  src: url('/fonts/fa/Vazirmatn-FD-Medium.woff2') format('woff2');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
+    font-family: 'Vazirmatn FD';
+    src: url('/fonts/fa/Vazirmatn-FD-Medium.woff2') format('woff2');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
 }
+
 @font-face {
-  font-family: 'Vazirmatn FD';
-  src: url('/fonts/fa/Vazirmatn-FD-SemiBold.woff2') format('woff2');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
+    font-family: 'Vazirmatn FD';
+    src: url('/fonts/fa/Vazirmatn-FD-SemiBold.woff2') format('woff2');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
 }
+
 @font-face {
-  font-family: 'Vazirmatn FD';
-  src: url('/fonts/fa/Vazirmatn-FD-Bold.woff2') format('woff2');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
+    font-family: 'Vazirmatn FD';
+    src: url('/fonts/fa/Vazirmatn-FD-Bold.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
 }
+
 @font-face {
-  font-family: 'Vazirmatn FD';
-  src: url('/fonts/fa/Vazirmatn-FD-ExtraBold.woff2') format('woff2');
-  font-weight: 800;
-  font-style: normal;
-  font-display: swap;
+    font-family: 'Vazirmatn FD';
+    src: url('/fonts/fa/Vazirmatn-FD-ExtraBold.woff2') format('woff2');
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
 }
 
 /* Inter (انگلیسی) */
 @font-face {
-  font-family: 'Inter';
-  src: url('/fonts/en/Inter_24pt-Thin.ttf') format('truetype');
-  font-weight: 100;
-  font-style: normal;
-  font-display: swap;
+    font-family: 'Inter';
+    src: url('/fonts/en/Inter_24pt-Thin.ttf') format('truetype');
+    font-weight: 100;
+    font-style: normal;
+    font-display: swap;
 }
+
 @font-face {
-  font-family: 'Inter';
-  src: url('/fonts/en/Inter_24pt-ExtraLight.ttf') format('truetype');
-  font-weight: 200;
-  font-style: normal;
-  font-display: swap;
+    font-family: 'Inter';
+    src: url('/fonts/en/Inter_24pt-ExtraLight.ttf') format('truetype');
+    font-weight: 200;
+    font-style: normal;
+    font-display: swap;
 }
+
 @font-face {
-  font-family: 'Inter';
-  src: url('/fonts/en/Inter_24pt-Light.ttf') format('truetype');
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
+    font-family: 'Inter';
+    src: url('/fonts/en/Inter_24pt-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
 }
+
 @font-face {
-  font-family: 'Inter';
-  src: url('/fonts/en/Inter_24pt-Regular.ttf') format('truetype');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
+    font-family: 'Inter';
+    src: url('/fonts/en/Inter_24pt-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
 }
+
 @font-face {
-  font-family: 'Inter';
-  src: url('/fonts/en/Inter_24pt-Medium.ttf') format('truetype');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
+    font-family: 'Inter';
+    src: url('/fonts/en/Inter_24pt-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
 }
+
 @font-face {
-  font-family: 'Inter';
-  src: url('/fonts/en/Inter_24pt-SemiBold.ttf') format('truetype');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
+    font-family: 'Inter';
+    src: url('/fonts/en/Inter_24pt-SemiBold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
 }
+
 @font-face {
-  font-family: 'Inter';
-  src: url('/fonts/en/Inter_24pt-Bold.ttf') format('truetype');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
+    font-family: 'Inter';
+    src: url('/fonts/en/Inter_24pt-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
 }
+
 @font-face {
-  font-family: 'Inter';
-  src: url('/fonts/en/Inter_24pt-ExtraBold.ttf') format('truetype');
-  font-weight: 800;
-  font-style: normal;
-  font-display: swap;
+    font-family: 'Inter';
+    src: url('/fonts/en/Inter_24pt-ExtraBold.ttf') format('truetype');
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
 }
+
 @font-face {
-  font-family: 'Inter';
-  src: url('/fonts/en/Inter_24pt-Black.ttf') format('truetype');
-  font-weight: 900;
-  font-style: normal;
-  font-display: swap;
+    font-family: 'Inter';
+    src: url('/fonts/en/Inter_24pt-Black.ttf') format('truetype');
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
 }
 
 html,
 body {
-  height: 100%;
-  overflow: hidden;
-  font-family: 'Vazirmatn FD', 'Inter', ui-sans-serif, system-ui, sans-serif;
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Vazirmatn FD', 'Inter', ui-sans-serif, system-ui, sans-serif;
 }
 
 body {
-  background: #020617;
+    background: #020617;
 }
 
 ::-webkit-scrollbar {
-  height: 10px;
-  width: 9px;
+    height: 10px;
+    width: 9px;
 }
+
 ::-webkit-scrollbar-thumb {
-  background: #1d3b5c;
-  border-radius: 5px;
+    background: #1d3b5c;
+    border-radius: 5px;
 }
+
 ::-webkit-scrollbar-track {
-  background: transparent;
+    background: transparent;
 }
