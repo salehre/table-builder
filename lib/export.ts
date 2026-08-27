@@ -133,12 +133,14 @@ export function exportToSQL(
   fileName: string,
   cellsInput: string[][],
   colNames: string[] = [],
-  rowNames: string[] = []
+  rowNames: string[] = [],
+  rowLabel: string = 'ردیف',
+  colLabel: string = 'ستون'
 ) {
   const tableName = sanitizeSqlIdentifier(fileName, 'my_table');
   const columns = [
-    'ردیف',
-    ...colNames.map((c, i) => sanitizeSqlIdentifier(c, `ستون_${i + 1}`)),
+      rowLabel,
+    ...colNames.map((c, i) => sanitizeSqlIdentifier(c, `${colLabel}_${i + 1}`)),
   ];
   const quotedColumns = columns.map((c) => `"${c}"`).join(', ');
 

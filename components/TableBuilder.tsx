@@ -78,6 +78,7 @@ export default function TableBuilder() {
     }, [showExportMenu]);
 
     function createTable() {
+        if (!newTableFileName.trim()) return;
         const r = Math.max(1, Math.min(200, Number(rowsInput) || 0));
         const c = Math.max(1, Math.min(50, Number(colsInput) || 0));
         const newCells: string[][] = Array.from({length: r}, () =>
@@ -88,7 +89,7 @@ export default function TableBuilder() {
         setRowHeights(Array.from({length: r}, () => DEFAULT_ROW_HEIGHT));
         setColNames(Array.from({length: c}, (_, i) => `${t('table.columnPrefix')} ${i + 1}`));
         setRowNames(Array.from({length: r}, (_, i) => `${t('table.rowPrefix')} ${i + 1}`));
-        setFileName(newTableFileName.trim() || t('newTable.defaultFileName'));
+        setFileName(newTableFileName.trim());
         setInitialized(true);
         setShowNewTableDialog(false);
     }
@@ -131,7 +132,7 @@ export default function TableBuilder() {
             description: t('confirm.sql.description'),
             confirmLabel: t('confirm.sql.confirmLabel'),
             danger: false,
-            action: () => exportToSQL(fileName, cells, colNames, rowNames),
+            action: () => exportToSQL(fileName, cells, colNames, rowNames, t('table.rowPrefix'), t('table.columnPrefix')),
         },
         delete: {
             title: t('confirm.delete.title'),
