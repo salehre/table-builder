@@ -590,19 +590,19 @@ export default function TableBuilder() {
                         <h1 className="text-lg font-bold text-slate-100">{t('header.title')}</h1>
                         <p className="mt-0.5 text-xs text-slate-500">{t('header.subtitle')}</p>
                     </div>
+                </div>
+                <div className="flex items-center gap-2">
                     <button
                         onClick={toggleLanguage}
-                        className="mr-2 flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-slate-100"
+                        className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-gradient-to-b from-slate-800 to-slate-900 px-3 py-1.5 text-xs font-medium text-slate-300 shadow-sm shadow-black/20 transition hover:-translate-y-px hover:border-slate-600 hover:text-slate-100 hover:shadow-md hover:shadow-black/30"
                         title={t('header.switchLanguage')}
                     >
                         <Icon
                             icon={direction === 'rtl' ? 'emojione-monotone:flag-for-united-states' : 'emojione-monotone:flag-for-armenia'}
-                            width={21}
-                            height={21}
+                            width={18}
+                            height={18}
                         />
                     </button>
-                </div>
-                <div className="flex items-center gap-2">
                     <a
                         href="https://www.coffeete.ir/salehrezaei"
                         target="_blank"
