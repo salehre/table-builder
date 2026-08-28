@@ -45,7 +45,7 @@ export default function NewTableDialog({
             <div className="relative w-full max-w-md rounded-2xl border border-slate-800 bg-gradient-to-b from-slate-800 to-slate-900 p-8 shadow-2xl shadow-black/60">
                 <button
                     onClick={onClose}
-                    className="absolute left-4 top-4 text-slate-500 hover:text-slate-300"
+                    className="absolute end-4 top-4 text-slate-500 hover:text-slate-300"
                     title={t('newTable.close')}
                 >
                     <Icon icon="ant-design:close-outlined" width="18" height="18"/>
@@ -141,7 +141,8 @@ export default function NewTableDialog({
                         value={fileName}
                         placeholder={t('newTable.fileNamePlaceholder')}
                         onChange={(e) => setFileName(e.target.value)}
-                        className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-slate-100 focus:border-indigo-500 focus:outline-none"
+                        className="w-full rounded-lg border border-slate-700 bg-slate-800 placeholder-red-300
+                         px-3 py-2 text-slate-100 focus:border-indigo-500 focus:outline-none"
                     />
                 </div>
 
