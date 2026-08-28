@@ -139,6 +139,12 @@ body {
     font-family: 'Vazirmatn FD', 'Inter', ui-sans-serif, system-ui, sans-serif;
 }
 
+/* در حالت انگلیسی از Inter استفاده کن تا اعداد لاتین رسم بشن؛
+   فونت Vazirmatn FD همیشه ارقام رو به شکل فارسی (Farsi Digits) نشون می‌ده */
+html[lang='en'] body {
+    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
  input[type='number']::-webkit-inner-spin-button,
  input[type='number']::-webkit-outer-spin-button {
    -webkit-appearance: none;

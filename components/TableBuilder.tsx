@@ -10,6 +10,7 @@ import EditableText from './EditableText';
 import NewTableDialog from './NewTableDialog';
 import ConfirmDialog from './ConfirmDialog';
 import TableSizeField from './Tablesizefield';
+import TableBuilderSkeleton from './TableBuilderSkeleton';
 import { Icon } from '@iconify/react';
 
 const DEFAULT_COL_WIDTH = 130;
@@ -58,9 +59,11 @@ export default function TableBuilder() {
     const [tables, setTables] = useState<StoredTable[]>([]);
     const [currentTableId, setCurrentTableId] = useState<string | null>(null);
     const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+    const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
         setTables(loadTables());
+        setMounted(true);
     }, []);
 
     const skipNextSaveRef = useRef(false);
@@ -567,6 +570,10 @@ export default function TableBuilder() {
         setDragOverRow(null);
     }
 
+    if (!mounted) {
+        return <TableBuilderSkeleton />;
+    }
+
     return (
         <div
             className="flex h-screen flex-col gap-4 overflow-hidden bg-transparent p-4"
@@ -796,7 +803,8 @@ export default function TableBuilder() {
                         >
                             {t('sidebar.newTable')}
                         </button>
-                        <a className="text-sm text-center tracking-wide pt-2" target="_blank" href="https://resume-roadmap.vercel.app/">Powered By <span  className="text-indigo-500"> Saleh Rezaei</span></a>
+                        <a className="text-sm text-center tracking-wide pt-2" target="_blank" href="https://resume-roadmap.vercel.app/">Powered By
+                         <span  className="text-indigo-500" style={{ textShadow: "2px 2px 4px #432DD7" }}> Saleh Rezaei</span></a>
                     </div>
                 </aside>
 
