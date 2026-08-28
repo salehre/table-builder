@@ -56,7 +56,7 @@ export default function TableSizeField({
     return (
         <div
             onClick={(e) => e.stopPropagation()}
-            className={`flex items-center rounded-md bg-slate-900/70 text-slate-400 ${
+            className={`flex items-center rounded-md bg-gradient-to-b from-slate-800/80 to-slate-900/80 text-slate-400 shadow-inner shadow-black/30 ${
                 isMd ? 'gap-1.5 px-2.5 py-1.5 text-sm' : 'gap-1 px-1.5 py-0.5 text-[11px]'
             }`}
         >

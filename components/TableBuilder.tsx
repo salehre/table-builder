@@ -569,14 +569,14 @@ export default function TableBuilder() {
 
     return (
         <div
-            className="flex h-screen flex-col gap-4 overflow-hidden bg-slate-950 p-4"
+            className="flex h-screen flex-col gap-4 overflow-hidden bg-transparent p-4"
             dir={direction}
         >
             <Toaster richColors position={direction === 'rtl' ? 'bottom-left' : 'bottom-right'} dir={direction} />
             {/* هدر بالای صفحه */}
-            <header className="flex shrink-0 items-center justify-between rounded-lg border border-slate-800 bg-slate-900 px-5 py-3 shadow-lg shadow-black/30">
+            <header className="flex shrink-0 items-center justify-between rounded-lg border border-slate-800 bg-gradient-to-b from-slate-900 to-slate-900/60 px-5 py-3 shadow-lg shadow-black/40">
                 <div className="flex items-center gap-3">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-indigo-600">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-700 shadow-md shadow-indigo-950/60 ring-1 ring-white/10">
             <img src="/Logo.png" alt={t('header.title')} className="h-full w-full object-cover" />
           </span>
                     <div>
@@ -600,7 +600,7 @@ export default function TableBuilder() {
                         href="https://www.coffeete.ir/salehrezaei"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-1.5 rounded-md bg-[#efe2d1] px-3.5 py-1.5 text-sm font-semibold text-[#1c1b1b] transition hover:-translate-y-px hover:bg-[#f3e8da]"
+                        className="flex items-center gap-1.5 rounded-md bg-gradient-to-b from-[#f6ead9] to-[#e8d6bd] px-3.5 py-1.5 text-sm font-semibold text-[#1c1b1b] shadow-sm shadow-black/20 transition hover:-translate-y-px hover:from-[#f9efe1] hover:to-[#efdec6] hover:shadow-md hover:shadow-black/30"
                         aria-label={t('header.support')}
                     >
                         <Icon icon="fa7-solid:coffee" className="pb-0.5" color="#F26C50" width="20" height="20" />
@@ -611,7 +611,7 @@ export default function TableBuilder() {
                         <div className="relative" ref={exportMenuRef}>
                             <button
                                 onClick={() => setShowExportMenu((v) => !v)}
-                                className="flex items-center gap-1.5 rounded-lg bg-indigo-600 px-4 py-2 text-xs font-medium text-white hover:bg-indigo-500"
+                                className="flex items-center gap-1.5 rounded-lg bg-gradient-to-b from-indigo-500 to-indigo-700 px-4 py-2 text-xs font-medium text-white shadow-md shadow-indigo-950/50 transition hover:-translate-y-px hover:from-indigo-400 hover:to-indigo-600 hover:shadow-lg hover:shadow-indigo-900/50"
                             >
                                 {t('export.button')}
                                 <Icon
@@ -623,7 +623,7 @@ export default function TableBuilder() {
                             </button>
                             {showExportMenu && (
                                 <div
-                                    className={`absolute top-full z-20 mt-2 flex w-44 flex-col gap-1 overflow-hidden rounded-lg border border-slate-800 bg-slate-900  shadow-xl shadow-black/40 ${direction === 'rtl' ? 'right-0' : 'left-0'
+                                    className={`absolute top-full z-20 mt-2 flex w-44 flex-col gap-1 overflow-hidden rounded-lg border border-slate-800 bg-gradient-to-b from-slate-800 to-slate-900 p-1 shadow-xl shadow-black/50 ${direction === 'rtl' ? 'right-0' : 'left-0'
                                     }`}
                                 >
                                     <button
@@ -631,9 +631,9 @@ export default function TableBuilder() {
                                             setConfirmAction('word');
                                             setShowExportMenu(false);
                                         }}
-                                        className="flex w-full items-center gap-2 px-3 py-2 text-right text-xs font-medium text-slate-200 hover:bg-[#2461CA]"
+                                        className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-right text-xs font-medium text-slate-200 transition hover:bg-gradient-to-r hover:from-[#2461CA]/90 hover:to-[#3a7bdb]/70 hover:shadow-sm hover:shadow-[#2461CA]/40"
                                     >
-                                        <span className="h-2 w-2 rounded-full bg-[#2461CA]" />
+                                        <span className="h-2 w-2 rounded-full bg-gradient-to-br from-[#4b8bea] to-[#2461CA] shadow-sm shadow-[#2461CA]/60" />
                                         {t('export.word')}
                                     </button>
                                     <button
@@ -641,9 +641,9 @@ export default function TableBuilder() {
                                             setConfirmAction('excel');
                                             setShowExportMenu(false);
                                         }}
-                                        className="flex w-full items-center gap-2 px-3 py-2 text-right text-xs font-medium text-slate-200 hover:bg-[#0F7937]"
+                                        className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-right text-xs font-medium text-slate-200 transition hover:bg-gradient-to-r hover:from-[#0F7937]/90 hover:to-[#17a34d]/70 hover:shadow-sm hover:shadow-[#0F7937]/40"
                                     >
-                                        <span className="h-2 w-2 rounded-full bg-[#0F7937]" />
+                                        <span className="h-2 w-2 rounded-full bg-gradient-to-br from-[#22c25f] to-[#0F7937] shadow-sm shadow-[#0F7937]/60" />
                                         {t('export.excel')}
                                     </button>
                                     <button
@@ -651,10 +651,10 @@ export default function TableBuilder() {
                                             setConfirmAction('sql');
                                             setShowExportMenu(false);
                                         }}
-                                        className="flex w-full items-center gap-2 px-3 py-2 text-right text-xs font-medium text-slate-200 hover:bg-[#d6771d]"
+                                        className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-right text-xs font-medium text-slate-200 transition hover:bg-gradient-to-r hover:from-[#d6771d]/90 hover:to-[#f0954a]/70 hover:shadow-sm hover:shadow-[#d6771d]/40"
                                         title={t('export.sqlTitle')}
                                     >
-                                        <span className="h-2 w-2 rounded-full bg-[#d6771d]" />
+                                        <span className="h-2 w-2 rounded-full bg-gradient-to-br from-[#f0954a] to-[#d6771d] shadow-sm shadow-[#d6771d]/60" />
                                         {t('export.sql')}
                                     </button>
                                 </div>
@@ -662,7 +662,7 @@ export default function TableBuilder() {
                         </div>
                         <button
                             onClick={() => setConfirmAction('delete')}
-                            className="flex items-center gap-1.5 rounded-lg bg-red-600 px-4 py-2 text-xs font-medium text-white hover:bg-red-500"
+                            className="flex items-center gap-1.5 rounded-lg bg-gradient-to-b from-red-500 to-red-700 px-4 py-2 text-xs font-medium text-white shadow-md shadow-red-950/50 transition hover:-translate-y-px hover:from-red-400 hover:to-red-600 hover:shadow-lg hover:shadow-red-900/50"
                         >
                             {t('export.deleteTable')}
                         </button>
@@ -673,7 +673,7 @@ export default function TableBuilder() {
 
             <div className="flex flex-1 gap-4 overflow-hidden">
                 {/* سایدبار */}
-                <aside className="flex h-full w-72 shrink-0 flex-col gap-5 overflow-hidden rounded-lg border border-slate-800 bg-slate-900 p-5 shadow-lg shadow-black/30">
+                <aside className="flex h-full w-72 shrink-0 flex-col gap-5 overflow-hidden rounded-lg border border-slate-800 bg-gradient-to-b from-slate-900 to-slate-950 p-5 shadow-lg shadow-black/40">
 
                     {initialized && (
                         <div>
@@ -717,17 +717,17 @@ export default function TableBuilder() {
                             <span className="text-xs font-medium text-slate-400">{t('sidebar.editTable')}</span>
                             <button
                                 onClick={addRow}
-                                className="flex items-center gap-2 rounded-lg bg-slate-800 px-3 py-2.5 text-sm font-medium text-slate-200 hover:bg-slate-700"
+                                className="flex items-center gap-2 rounded-lg bg-gradient-to-b from-slate-700 to-slate-800 px-3 py-2.5 text-sm font-medium text-slate-200 shadow-sm shadow-black/30 transition hover:from-slate-600 hover:to-slate-700 hover:shadow-md hover:shadow-black/40"
                             >
-                <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-600/20 text-indigo-400">
+                <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500/40 to-violet-600/30 text-indigo-300 shadow-inner shadow-indigo-950/40">
                   <Icon icon="material-symbols:add-row-below-outline-rounded" width="24" height="24" /></span>
                                 {t('sidebar.addRow')}
                             </button>
                             <button
                                 onClick={addColumn}
-                                className="flex items-center gap-2 rounded-lg bg-slate-800 px-3 py-2.5 text-sm font-medium text-slate-200 hover:bg-slate-700"
+                                className="flex items-center gap-2 rounded-lg bg-gradient-to-b from-slate-700 to-slate-800 px-3 py-2.5 text-sm font-medium text-slate-200 shadow-sm shadow-black/30 transition hover:from-slate-600 hover:to-slate-700 hover:shadow-md hover:shadow-black/40"
                             >
-                <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-600/20 text-indigo-400">
+                <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500/40 to-violet-600/30 text-indigo-300 shadow-inner shadow-indigo-950/40">
                   <Icon icon="flowbite:add-column-after-outline" width="24" height="24" /></span>
                                 {t('sidebar.addColumn')}
                             </button>
@@ -746,9 +746,9 @@ export default function TableBuilder() {
                                             key={tb.id}
                                             onClick={() => openTable(tb.id)}
                                             title={tb.name}
-                                            className={`flex cursor-pointer flex-col gap-1.5 rounded-lg px-3 py-2 text-start text-sm ${tb.id === currentTableId
-                                                ? 'bg-indigo-600/20 text-indigo-300'
-                                                : 'text-slate-300 hover:bg-slate-800'
+                                            className={`flex cursor-pointer flex-col gap-1.5 rounded-lg px-3 py-2 text-start text-sm transition ${tb.id === currentTableId
+                                                ? 'bg-gradient-to-r from-indigo-600/30 to-violet-600/20 text-indigo-300 shadow-sm shadow-indigo-950/40 ring-1 ring-indigo-500/20'
+                                                : 'text-slate-300 hover:bg-gradient-to-r hover:from-slate-800 hover:to-slate-800/50'
                                             }`}
                                         >
                                             <div className="flex items-center gap-2">
@@ -772,7 +772,7 @@ export default function TableBuilder() {
                     )}
 
                     <div className="mt-auto flex flex-col gap-3">
-                        <div className="flex flex-col gap-2 rounded-lg border border-slate-800 bg-slate-800/50 p-3 text-[11px] leading-5 text-slate-400">
+                        <div className="flex flex-col gap-2 rounded-lg border border-slate-800 bg-gradient-to-b from-slate-800/60 to-slate-800/30 p-3 text-[11px] leading-5 text-slate-400 shadow-inner shadow-black/20">
                             <div className="flex items-start gap-1.5">
                                 <Icon icon="carbon:dot-mark" width="14" height="14" className="mt-0.5 shrink-0 text-indigo-400" />
                                 <span>{t('sidebar.tipResizeCol')}</span>
@@ -792,7 +792,7 @@ export default function TableBuilder() {
                         </div>
                         <button
                             onClick={openNewTableDialog}
-                            className="flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-3 py-2.5 text-sm font-medium text-white hover:bg-indigo-500"
+                            className="flex items-center justify-center gap-2 rounded-lg bg-gradient-to-b from-indigo-500 to-indigo-700 px-3 py-2.5 text-sm font-medium text-white shadow-md shadow-indigo-950/50 transition hover:-translate-y-px hover:from-indigo-400 hover:to-indigo-600 hover:shadow-lg hover:shadow-indigo-900/50"
                         >
                             {t('sidebar.newTable')}
                         </button>
@@ -804,7 +804,7 @@ export default function TableBuilder() {
                 <main className="flex-1 overflow-hidden p-6">
                     {initialized && (
                         <div
-                            className="h-full overflow-auto rounded-lg border border-slate-800 bg-slate-900 p-4"
+                            className="h-full overflow-auto rounded-lg border border-slate-800 bg-gradient-to-b from-slate-900 to-slate-950 p-4 shadow-inner shadow-black/30"
                             dir={direction}
                         >
                             <table className="border-separate" style={{ borderSpacing: 0 }}>
@@ -816,13 +816,13 @@ export default function TableBuilder() {
                                 </colgroup>
                                 <thead>
                                 <tr>
-                                    <th className="border border-slate-700 bg-slate-800" />
+                                    <th className="border border-slate-700 bg-gradient-to-b from-slate-700 to-slate-800" />
                                     {colWidths.map((w, ci) => (
                                         <th
                                             key={ci}
                                             onDragOver={(e) => handleColDragOver(e, ci)}
                                             onDrop={() => handleColDrop(ci)}
-                                            className={`relative border border-slate-700 bg-slate-800 p-0 text-xs font-medium text-slate-300 ${dragOverCol === ci ? 'bg-indigo-900/50' : ''
+                                            className={`relative border border-slate-700 p-0 text-xs font-medium text-slate-300 ${dragOverCol === ci ? 'bg-gradient-to-b from-indigo-800/60 to-indigo-900/60' : 'bg-gradient-to-b from-slate-700 to-slate-800'
                                             }`}
                                         >
                                             <div className="flex h-9 items-center justify-between gap-1 px-1.5">
@@ -864,7 +864,7 @@ export default function TableBuilder() {
                                         <td
                                             onDragOver={(e) => handleRowDragOver(e, ri)}
                                             onDrop={() => handleRowDrop(ri)}
-                                            className={`relative border border-slate-700 bg-slate-800 p-0 text-xs text-slate-300 ${dragOverRow === ri ? 'bg-indigo-900/50' : ''
+                                            className={`relative border border-slate-700 p-0 text-xs text-slate-300 ${dragOverRow === ri ? 'bg-gradient-to-r from-indigo-800/60 to-indigo-900/60' : 'bg-gradient-to-b from-slate-700 to-slate-800'
                                             }`}
                                             style={{ height: rowHeights[ri] }}
                                         >
@@ -923,13 +923,13 @@ export default function TableBuilder() {
                     )}
                     {!initialized && (
                         <div className="flex h-full items-center justify-center">
-                            <div className="flex flex-col items-center gap-4 rounded-lg border border-slate-800 bg-slate-900 px-10 py-8 text-center shadow-lg">
+                            <div className="flex flex-col items-center gap-4 rounded-lg border border-slate-800 bg-gradient-to-b from-slate-900 to-slate-950 px-10 py-8 text-center shadow-xl shadow-black/40">
                                 <p className="text-sm leading-6 text-slate-400">
                                     {t('emptyState.message')}
                                 </p>
                                 <button
                                     onClick={openNewTableDialog}
-                                    className="rounded-lg bg-indigo-600 px-5 py-2.5 font-medium text-white hover:bg-indigo-500"
+                                    className="rounded-lg bg-gradient-to-b from-indigo-500 to-indigo-700 px-5 py-2.5 font-medium text-white shadow-md shadow-indigo-950/50 transition hover:-translate-y-px hover:from-indigo-400 hover:to-indigo-600 hover:shadow-lg hover:shadow-indigo-900/50"
                                 >
                                     {t('emptyState.createButton')}
                                 </button>

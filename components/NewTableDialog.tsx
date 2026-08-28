@@ -42,7 +42,7 @@ export default function NewTableDialog({
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-            <div className="relative w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900 p-8 shadow-xl">
+            <div className="relative w-full max-w-md rounded-2xl border border-slate-800 bg-gradient-to-b from-slate-800 to-slate-900 p-8 shadow-2xl shadow-black/60">
                 <button
                     onClick={onClose}
                     className="absolute left-4 top-4 text-slate-500 hover:text-slate-300"
@@ -78,7 +78,7 @@ export default function NewTableDialog({
                                     type="button"
                                     tabIndex={-1}
                                     onClick={() => step(rowsInput, 1, 1, 200, setRowsInput)}
-                                    className="flex flex-1 items-center justify-center rounded-tl-none rounded-tr-lg text-slate-500 hover:bg-slate-700 hover:text-slate-200"
+                                    className="flex flex-1 items-center justify-center rounded-tl-none rounded-tr-lg text-slate-500 hover:bg-gradient-to-b hover:from-indigo-600/40 hover:to-indigo-700/30 hover:text-indigo-200"
                                 >
                                     <Icon icon="mdi:chevron-up" width="14" height="14"/>
                                 </button>
@@ -86,7 +86,7 @@ export default function NewTableDialog({
                                     type="button"
                                     tabIndex={-1}
                                     onClick={() => step(rowsInput, -1, 1, 200, setRowsInput)}
-                                    className="flex flex-1 items-center justify-center rounded-br-lg border-t border-slate-700 text-slate-500 hover:bg-slate-700 hover:text-slate-200"
+                                    className="flex flex-1 items-center justify-center rounded-br-lg border-t border-slate-700 text-slate-500 hover:bg-gradient-to-b hover:from-indigo-600/40 hover:to-indigo-700/30 hover:text-indigo-200"
                                 >
                                     <Icon icon="mdi:chevron-down" width="14" height="14"/>
                                 </button>
@@ -114,7 +114,7 @@ export default function NewTableDialog({
                                     type="button"
                                     tabIndex={-1}
                                     onClick={() => step(colsInput, 1, 1, 50, setColsInput)}
-                                    className="flex flex-1 items-center justify-center rounded-tr-lg text-slate-500 hover:bg-slate-700 hover:text-slate-200"
+                                    className="flex flex-1 items-center justify-center rounded-tr-lg text-slate-500 hover:bg-gradient-to-b hover:from-indigo-600/40 hover:to-indigo-700/30 hover:text-indigo-200"
                                 >
                                     <Icon icon="mdi:chevron-up" width="14" height="14"/>
                                 </button>
@@ -122,7 +122,7 @@ export default function NewTableDialog({
                                     type="button"
                                     tabIndex={-1}
                                     onClick={() => step(colsInput, -1, 1, 50, setColsInput)}
-                                    className="flex flex-1 items-center justify-center rounded-br-lg border-t border-slate-700 text-slate-500 hover:bg-slate-700 hover:text-slate-200"
+                                    className="flex flex-1 items-center justify-center rounded-br-lg border-t border-slate-700 text-slate-500 hover:bg-gradient-to-b hover:from-indigo-600/40 hover:to-indigo-700/30 hover:text-indigo-200"
                                 >
                                     <Icon icon="mdi:chevron-down" width="14" height="14"/>
                                 </button>
@@ -157,7 +157,7 @@ export default function NewTableDialog({
                     <button
                         onClick={onCreate}
                         disabled={!fileName.trim()}
-                        className="flex-1 rounded-lg bg-indigo-600 px-4 py-2.5 font-medium text-white hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-indigo-600"
+                        className="flex-1 rounded-lg bg-gradient-to-b from-indigo-500 to-indigo-700 px-4 py-2.5 font-medium text-white shadow-md shadow-indigo-950/50 transition hover:from-indigo-400 hover:to-indigo-600 hover:shadow-lg hover:shadow-indigo-900/50 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:from-indigo-500 disabled:hover:to-indigo-700 disabled:hover:shadow-md"
                     >
                         {t('newTable.create')}
                     </button>
